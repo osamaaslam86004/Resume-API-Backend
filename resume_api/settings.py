@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "resume",
     "api_auth",
     "rest_framework",
+    "corsheaders",
     "django_extensions",
     "formtools",
     "crispy_forms",
@@ -63,7 +64,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "resume_api.cors.CustomCorsMiddleware",
+    # "resume_api.cors.CustomCorsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -159,9 +161,9 @@ MEDIA_URL = "/media/"
 CORS_ALLOWED_ORIGINS = [
     "https://osama11111.pythonanywhere.com",
     "https://osamaaslam.pythonanywhere.com",
-    # "https://web.postman.co",
+    "https://web.postman.co",
     "https://diverse-intense-whippet.ngrok-free.app",
-    # "http://127.0.0.1:5500"
+    "http://127.0.0.1:5500",
 ]
 
 CORS_ALLOW_METHODS = [
@@ -182,12 +184,14 @@ CORS_ALLOW_HEADERS = [
     "user-agent",
     "x-csrftoken",
     "x-requested-with",
+    "X-RateLimit-Limit",
+    "X-RateLimit-Remaining",
 ]
 
 
 if DEBUG:
     CSRF_TRUSTED_ORIGINS = [
-        # "http://127.0.0.1:5500",
+        "http://127.0.0.1:5500",
         "https://diverse-intense-whippet.ngrok-free.app",
         "https://osamaaslam.pythonanywhere.com",
         "https://osama11111.pythonanywhere.com",
@@ -195,10 +199,10 @@ if DEBUG:
 else:
     # authenticate teh request only, checking if it has CSRF token comming here from django-e-commrace
     CSRF_TRUSTED_ORIGINS = [
-        # "http://127.0.0.1:5500",
+        "http://127.0.0.1:5500",
         "https://osamaaslam.pythonanywhere.com",
         "https://osama11111.pythonanywhere.com",
-        # "https://web.postman.co",
+        "https://web.postman.co",
         "https://diverse-intense-whippet.ngrok-free.app",
     ]
 
