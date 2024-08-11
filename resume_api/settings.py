@@ -164,6 +164,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://web.postman.co",
     "https://diverse-intense-whippet.ngrok-free.app",
     "http://127.0.0.1:5500",
+    "https://resume-builder-integrated-with-resume-api.vercel.app",
 ]
 
 CORS_ALLOW_METHODS = [
@@ -195,6 +196,7 @@ if DEBUG:
         "https://diverse-intense-whippet.ngrok-free.app",
         "https://osamaaslam.pythonanywhere.com",
         "https://osama11111.pythonanywhere.com",
+        "https://resume-builder-integrated-with-resume-api.vercel.app",
     ]
 else:
     # authenticate teh request only, checking if it has CSRF token comming here from django-e-commrace
@@ -204,6 +206,7 @@ else:
         "https://osama11111.pythonanywhere.com",
         "https://web.postman.co",
         "https://diverse-intense-whippet.ngrok-free.app",
+        "https://resume-builder-integrated-with-resume-api.vercel.app",
     ]
 
 
