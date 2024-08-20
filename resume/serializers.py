@@ -1,7 +1,12 @@
 from rest_framework import serializers
 from django.db import transaction
 from django.core.exceptions import ValidationError
-from drf_spectacular.utils import extend_schema_field, OpenApiTypes, OpenApiExample
+from drf_spectacular.utils import (
+    extend_schema_field,
+    OpenApiTypes,
+    OpenApiExample,
+    extend_schema,
+)
 from resume.models import (
     PersonalInfo,
     Overview,
@@ -138,25 +143,21 @@ class JobSerializer(serializers.ModelSerializer):
     job_end_date = serializers.DateField(input_formats=["%d-%m-%Y"])
 
     # Applying the examples in the schema using drf-spectacular
-    @extend_schema_field(
-        serializers.DateField(input_formats=["%d-%m-%Y"], default="01-01-2020"),
+    @extend_schema(
         examples=[
             OpenApiExample("Example start date", value="01-01-2020"),
-            OpenApiExample("Example end date", value="31-12-2024"),
-        ],
+        ]
     )
-    def job_start_date(self):
-        pass
+    def get_job_start_date(self, obj):
+        return obj.job_start_date
 
-    @extend_schema_field(
-        serializers.DateField(input_formats=["%d-%m-%Y"], default="31-12-2024"),
+    @extend_schema(
         examples=[
-            OpenApiExample("Example start date", value="01-01-2020"),
             OpenApiExample("Example end date", value="31-12-2024"),
-        ],
+        ]
     )
-    def job_end_date(self):
-        pass
+    def get_job_end_date(self, obj):
+        return obj.job_end_date
 
     # @extend_schema_field(OpenApiTypes.DATE)
     # def get_job_start_date(self, obj):
