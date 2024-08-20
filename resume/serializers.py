@@ -133,6 +133,12 @@ class JobAccomplishmentSerializer(serializers.ModelSerializer):
 
 class JobSerializer(serializers.ModelSerializer):
     accomplishment = JobAccomplishmentSerializer()
+    job_start_date = serializers.DateField(
+        format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
+    )
+    job_end_date = serializers.DateField(
+        format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
+    )
 
     class Meta:
         model = Job
@@ -158,9 +164,24 @@ class EducationDetailSerializer(serializers.ModelSerializer):
 
 
 class EducationListCreateSerializer(serializers.ModelSerializer):
+    education_start_date = serializers.DateField(
+        format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
+    )
+    education_end_date = serializers.DateField(
+        format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
+    )
+
     class Meta:
         model = Education
-        fields = "__all__"
+        fields = [
+            "name",
+            "location",
+            "schoolurl",
+            "education_start_date",
+            "education_end_date",
+            "degree",
+            "description",
+        ]
 
     def update(self, instance, validated_data):
         fields_to_update = [

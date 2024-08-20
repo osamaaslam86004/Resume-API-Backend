@@ -258,9 +258,9 @@ REST_FRAMEWORK = {
         "anon": "200/hour",
         "user": "200/hour",
     },
-    "DATE_INPUT_FORMATS": ["%d-%m-%Y"],
-    "DATE_FORMAT": "%Y-%m-%d",
-    "DATETIME_FORMAT": "%Y-%m-%d %H",
+    # "DATE_INPUT_FORMATS": ["%d-%m-%Y"],
+    # "DATE_FORMAT": "%Y-%m-%d",
+    # "DATETIME_FORMAT": "%Y-%m-%d %H",
 }
 
 
