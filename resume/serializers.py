@@ -172,8 +172,12 @@ class EducationDetailSerializer(serializers.ModelSerializer):
 
 
 class EducationListCreateSerializer(serializers.ModelSerializer):
-    job_start_date = serializers.SerializerMethodField(method_name="get_field_custom")
-    job_end_date = serializers.SerializerMethodField(method_name="get_field_custom")
+    education_start_date = serializers.SerializerMethodField(
+        method_name="get_field_custom"
+    )
+    education_end_date = serializers.SerializerMethodField(
+        method_name="get_field_custom"
+    )
 
     @extend_schema_field(OpenApiTypes.DATETIME)
     def get_field_custom(self, object):
