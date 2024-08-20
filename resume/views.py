@@ -1,4 +1,5 @@
 import logging
+from drf_spectacular.utils import extend_schema, OpenApiTypes
 from resume.models import PersonalInfo
 from resume.forms import (
     PersonalInfoForm,
@@ -12,7 +13,10 @@ from resume.forms import (
     SkillAndSkillLevelForm,
 )
 from resume.resume_pagination import LargeResultsSetPagination
-from resume.serializers import PersonalInfo_Serializer
+from resume.serializers import (
+    PersonalInfo_Serializer,
+    PersonalInfo_Serializer_Get_Request,
+)
 from django.http import (
     HttpResponseRedirect,
     HttpResponsePermanentRedirect,
@@ -206,6 +210,11 @@ class PersonalInfo_List_CreateView(viewsets.ModelViewSet, ValidateJson):
         response["X-RateLimit-Limit"] = request.rate_limit["X-RateLimit-Limit"]
         response["X-RateLimit-Remaining"] = request.rate_limit["X-RateLimit-Remaining"]
 
+    @extend_schema(
+        description="End-Point For Creating Resume",
+        request=PersonalInfo_Serializer,
+        responses=PersonalInfo_Serializer_Get_Request,
+    )
     def create(self, request, *args, **kwargs):
 
         # Validate request data
@@ -307,9 +316,7 @@ class PersonalInfo_List_CreateView(viewsets.ModelViewSet, ValidateJson):
                     self.perform_destroy(personal_info[0])
                     print("perform deleted is perfomed")
 
-                    response = Response(
-                        {"data": data}, status=status.HTTP_200_OK
-                    )
+                    response = Response({"data": data}, status=status.HTTP_200_OK)
 
             except Exception as e:
                 data["status"] = "FAILED"
@@ -518,7 +525,6 @@ class PersonalInfo_List_CreateView(viewsets.ModelViewSet, ValidateJson):
         response["Content-Type"] = "application/json"
         return response
 
-
     def get_object(self):
         request = self.request
 
@@ -533,9 +539,6 @@ class PersonalInfo_List_CreateView(viewsets.ModelViewSet, ValidateJson):
             return self.http_method_not_allowed(request, *args, **kwargs)
         data = self.metadata_class().determine_metadata(request, self)
         return Response(data, status=status.HTTP_200_OK)
-
-
-
 
 
 # from django.core.files.storage import FileSystemStorage

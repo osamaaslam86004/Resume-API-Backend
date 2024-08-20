@@ -134,19 +134,8 @@ class JobAccomplishmentSerializer(serializers.ModelSerializer):
 
 class JobSerializer(serializers.ModelSerializer):
     accomplishment = JobAccomplishmentSerializer()
-    job_start_date = serializers.SerializerMethodField(method_name="get_field_custom")
-    job_end_date = serializers.SerializerMethodField(method_name="get_field_custom")
-
-    @extend_schema_field(OpenApiTypes.DATE)
-    def get_field_custom(self, object):
-        return "DD-MM-YYYY YYYY-MM-DD"
-
-    # job_start_date = serializers.DateField(
-    #     format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
-    # )
-    # job_end_date = serializers.DateField(
-    #     format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
-    # )
+    job_start_date = serializers.DateField(input_formats=["%d-%m-%Y", "%Y-%m-%d"])
+    job_end_date = serializers.DateField(input_formats=["%d-%m-%Y", "%Y-%m-%d"])
 
     class Meta:
         model = Job
@@ -172,23 +161,8 @@ class EducationDetailSerializer(serializers.ModelSerializer):
 
 
 class EducationListCreateSerializer(serializers.ModelSerializer):
-    education_start_date = serializers.SerializerMethodField(
-        method_name="get_field_custom"
-    )
-    education_end_date = serializers.SerializerMethodField(
-        method_name="get_field_custom"
-    )
-
-    @extend_schema_field(OpenApiTypes.DATETIME)
-    def get_field_custom(self, object):
-        return "DD-MM-YYYY YYYY-MM-DD"
-
-    # education_start_date = serializers.DateField(
-    #     format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
-    # )
-    # education_end_date = serializers.DateField(
-    #     format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
-    # )
+    education_start_date = serializers.DateField(input_formats=["%d-%m-%Y", "%Y-%m-%d"])
+    education_end_date = serializers.DateField(input_formats=["%d-%m-%Y", "%Y-%m-%d"])
 
     class Meta:
         model = Education
@@ -647,3 +621,52 @@ class PersonalInfo__Serializer(serializers.ModelSerializer):
                 instance, field, validated_data.get(field, getattr(instance, field))
             )
         instance.save()
+
+
+class EducationListCreateSerializer_Get_Request(serializers.ModelSerializer):
+    education_start_date = serializers.DateField(format="%Y-%m-%d")
+    education_end_date = serializers.DateField(format="%Y-%m-%d")
+
+    class Meta:
+        model = Education
+        fields = [
+            "name",
+            "location",
+            "schoolurl",
+            "education_start_date",
+            "education_end_date",
+            "degree",
+            "description",
+        ]
+
+
+class JobSerializer_Get_Request(serializers.ModelSerializer):
+    accomplishment = JobAccomplishmentSerializer()
+    job_start_date = serializers.DateField(format="%Y-%m-%d")
+    job_end_date = serializers.DateField(format="%Y-%m-%d")
+
+    class Meta:
+        model = Job
+        fields = [
+            "company",
+            "companyurl",
+            "location",
+            "title",
+            "description",
+            "job_start_date",
+            "job_end_date",
+            "is_current",
+            "is_public",
+            "image",
+            "accomplishment",
+        ]
+
+
+class PersonalInfo_Serializer_Get_Request(PersonalInfo_Serializer):
+    overview = OverviewSerializer()
+    education = EducationListCreateSerializer_Get_Request(many=True)
+    job = JobSerializer_Get_Request()
+    skill = SkillAndSkillLevelSerializer(many=True)
+    programming_area = ProgrammingAreaSerializer(many=True)
+    projects = ProjectsSerializer(many=True)
+    publications = PublicationSerializer(many=True)
