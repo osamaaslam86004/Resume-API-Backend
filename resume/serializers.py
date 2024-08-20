@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from django.http import JsonResponse
+from django.db import transaction
+from django.core.exceptions import ValidationError
 from resume.models import (
     PersonalInfo,
     Overview,
@@ -13,8 +14,7 @@ from resume.models import (
     Publication,
 )
 from api_auth.models import CustomUser
-from django.core.exceptions import ValidationError  # Import ValidationError
-from django.db import transaction
+from resume.schema_classes_for_documentation import CustomDateField
 
 
 class PublicationSerializer(serializers.ModelSerializer):
@@ -133,12 +133,14 @@ class JobAccomplishmentSerializer(serializers.ModelSerializer):
 
 class JobSerializer(serializers.ModelSerializer):
     accomplishment = JobAccomplishmentSerializer()
-    job_start_date = serializers.DateField(
-        format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
-    )
-    job_end_date = serializers.DateField(
-        format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
-    )
+    job_start_date = CustomDateField()
+    job_end_date = CustomDateField()
+    # job_start_date = serializers.DateField(
+    #     format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
+    # )
+    # job_end_date = serializers.DateField(
+    #     format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
+    # )
 
     class Meta:
         model = Job
@@ -164,12 +166,14 @@ class EducationDetailSerializer(serializers.ModelSerializer):
 
 
 class EducationListCreateSerializer(serializers.ModelSerializer):
-    education_start_date = serializers.DateField(
-        format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
-    )
-    education_end_date = serializers.DateField(
-        format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
-    )
+    education_start_date = CustomDateField()
+    education_end_date = CustomDateField()
+    # education_start_date = serializers.DateField(
+    #     format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
+    # )
+    # education_end_date = serializers.DateField(
+    #     format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
+    # )
 
     class Meta:
         model = Education
