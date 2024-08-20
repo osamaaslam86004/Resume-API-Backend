@@ -137,6 +137,14 @@ class JobSerializer(serializers.ModelSerializer):
     job_start_date = serializers.DateField(input_formats=["%d-%m-%Y"])
     job_end_date = serializers.DateField(input_formats=["%d-%m-%Y"])
 
+    @extend_schema_field(OpenApiTypes.DATE)
+    def get_job_start_date(self, obj):
+        return obj.job_start_date.strftime("%d-%m-%Y") if obj.job_start_date else None
+
+    @extend_schema_field(OpenApiTypes.DATE)
+    def get_job_end_date(self, obj):
+        return obj.job_end_date.strftime("%d-%m-%Y") if obj.job_end_date else None
+
     class Meta:
         model = Job
         fields = [
@@ -163,6 +171,22 @@ class EducationDetailSerializer(serializers.ModelSerializer):
 class EducationListCreateSerializer(serializers.ModelSerializer):
     education_start_date = serializers.DateField(input_formats=["%d-%m-%Y"])
     education_end_date = serializers.DateField(input_formats=["%d-%m-%Y"])
+
+    @extend_schema_field(OpenApiTypes.DATE)
+    def get_education_start_date(self, obj):
+        return (
+            obj.education_start_date.strftime("%d-%m-%Y")
+            if obj.education_start_date
+            else None
+        )
+
+    @extend_schema_field(OpenApiTypes.DATE)
+    def get_education_end_date(self, obj):
+        return (
+            obj.education_end_date.strftime("%d-%m-%Y")
+            if obj.education_end_date
+            else None
+        )
 
     class Meta:
         model = Education
