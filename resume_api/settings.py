@@ -259,6 +259,8 @@ REST_FRAMEWORK = {
         "user": "200/hour",
     },
     "DATE_INPUT_FORMATS": ["%d-%m-%Y"],
+    "DATE_FORMAT": "%Y-%m-%d",
+    "DATETIME_FORMAT": "%Y-%m-%d %H",
 }
 
 
