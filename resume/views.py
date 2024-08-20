@@ -214,6 +214,30 @@ class PersonalInfo_List_CreateView(viewsets.ModelViewSet, ValidateJson):
         description="End-Point For Creating Resume",
         request=PersonalInfo_Serializer,
         responses=PersonalInfo_Serializer_Get_Request,
+        parameters=[
+            {
+                "name": "education_start_date",
+                "in": "query",
+                "schema": {
+                    "type": "string",
+                    "format": "date",
+                    "pattern": "^\\d{2}-\\d{2}-\\d{4}$",
+                },
+                "required": True,
+                "description": "Date in format DD-MM-YYYY",
+            },
+            {
+                "name": "education_end_date",
+                "in": "query",
+                "schema": {
+                    "type": "string",
+                    "format": "date",
+                    "pattern": "^\\d{2}-\\d{2}-\\d{4}$",
+                },
+                "required": True,
+                "description": "Date in format DD-MM-YYYY",
+            },
+        ],
     )
     def create(self, request, *args, **kwargs):
 
