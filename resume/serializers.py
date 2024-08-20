@@ -134,8 +134,8 @@ class JobAccomplishmentSerializer(serializers.ModelSerializer):
 
 class JobSerializer(serializers.ModelSerializer):
     accomplishment = JobAccomplishmentSerializer()
-    job_start_date = serializers.DateField(input_formats=["%d-%m-%Y", "%Y-%m-%d"])
-    job_end_date = serializers.DateField(input_formats=["%d-%m-%Y", "%Y-%m-%d"])
+    job_start_date = serializers.DateField(input_formats=["%d-%m-%Y"])
+    job_end_date = serializers.DateField(input_formats=["%d-%m-%Y"])
 
     class Meta:
         model = Job
@@ -161,8 +161,8 @@ class EducationDetailSerializer(serializers.ModelSerializer):
 
 
 class EducationListCreateSerializer(serializers.ModelSerializer):
-    education_start_date = serializers.DateField(input_formats=["%d-%m-%Y", "%Y-%m-%d"])
-    education_end_date = serializers.DateField(input_formats=["%d-%m-%Y", "%Y-%m-%d"])
+    education_start_date = serializers.DateField(input_formats=["%d-%m-%Y"])
+    education_end_date = serializers.DateField(input_formats=["%d-%m-%Y"])
 
     class Meta:
         model = Education
