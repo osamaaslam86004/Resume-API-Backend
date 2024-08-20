@@ -224,9 +224,6 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 # User Model
 AUTH_USER_MODEL = "api_auth.CustomUser"
 
-# Django Settings
-DATE_INPUT_FORMATS = ["%m/%d/%Y"]
-
 
 #  Stateless Authentication
 # In stateless authentication, the server doesn't keep track of the user's state (session).
@@ -261,6 +258,7 @@ REST_FRAMEWORK = {
         "anon": "200/hour",
         "user": "200/hour",
     },
+    "DATE_INPUT_FORMATS": ["%d-%m-%Y"],
 }
 
 
