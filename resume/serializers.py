@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.db import transaction
 from django.core.exceptions import ValidationError
-from drf_spectacular.utils import extend_schema_field, OpenApiTypes
+from drf_spectacular.utils import extend_schema_field, OpenApiTypes, OpenApiExample
 from resume.models import (
     PersonalInfo,
     Overview,
@@ -134,8 +134,19 @@ class JobAccomplishmentSerializer(serializers.ModelSerializer):
 
 class JobSerializer(serializers.ModelSerializer):
     accomplishment = JobAccomplishmentSerializer()
-    job_start_date = serializers.DateField(input_formats=["%d-%m-%Y"])
-    job_end_date = serializers.DateField(input_formats=["%d-%m-%Y"])
+    # job_start_date = serializers.DateField(input_formats=["%d-%m-%Y"])
+    # job_end_date = serializers.DateField(input_formats=["%d-%m-%Y"])
+
+    Job_start_date = serializers.DateField(
+        input_formats=["%d-%m-%Y"],
+        default="01-01-2020",
+        examples=[OpenApiExample("Example", value="01-01-2020")],
+    )
+    Job_end_date = serializers.DateField(
+        input_formats=["%d-%m-%Y"],
+        default="31-12-2024",
+        examples=[OpenApiExample("Example", value="31-12-2024")],
+    )
 
     # @extend_schema_field(OpenApiTypes.DATE)
     # def get_job_start_date(self, obj):
@@ -169,8 +180,19 @@ class EducationDetailSerializer(serializers.ModelSerializer):
 
 
 class EducationListCreateSerializer(serializers.ModelSerializer):
-    education_start_date = serializers.DateField(input_formats=["%d-%m-%Y"])
-    education_end_date = serializers.DateField(input_formats=["%d-%m-%Y"])
+    education_start_date = serializers.DateField(
+        input_formats=["%d-%m-%Y"],
+        default="01-01-2020",
+        examples=[OpenApiExample("Example", value="01-01-2020")],
+    )
+    education_end_date = serializers.DateField(
+        input_formats=["%d-%m-%Y"],
+        default="31-12-2024",
+        examples=[OpenApiExample("Example", value="31-12-2024")],
+    )
+
+    # education_start_date = serializers.DateField(input_formats=["%d-%m-%Y"])
+    # education_end_date = serializers.DateField(input_formats=["%d-%m-%Y"])
 
     # @extend_schema_field(OpenApiTypes.DATE)
     # def get_education_start_date(self, obj):
