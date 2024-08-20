@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.db import transaction
 from django.core.exceptions import ValidationError
+from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 from resume.models import (
     PersonalInfo,
     Overview,
@@ -133,12 +134,12 @@ class JobAccomplishmentSerializer(serializers.ModelSerializer):
 
 class JobSerializer(serializers.ModelSerializer):
     accomplishment = JobAccomplishmentSerializer()
-    job_start_date = CustomDateField(
-        format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
-    )
-    job_end_date = CustomDateField(
-        format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
-    )
+    job_start_date = serializers.SerializerMethodField(method="get_field_custom")
+    job_end_date = serializers.SerializerMethodField(method="get_field_custom")
+
+    @extend_schema_field(OpenApiTypes.DATETIME)
+    def get_field_custom(self, object):
+        return "DD-MM-YYYY YYYY-MM-DD"
 
     # job_start_date = serializers.DateField(
     #     format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
@@ -171,12 +172,13 @@ class EducationDetailSerializer(serializers.ModelSerializer):
 
 
 class EducationListCreateSerializer(serializers.ModelSerializer):
-    education_start_date = CustomDateField(
-        format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
-    )
-    education_end_date = CustomDateField(
-        format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
-    )
+    job_start_date = serializers.SerializerMethodField(method="get_field_custom")
+    job_end_date = serializers.SerializerMethodField(method="get_field_custom")
+
+    @extend_schema_field(OpenApiTypes.DATETIME)
+    def get_field_custom(self, object):
+        return "DD-MM-YYYY YYYY-MM-DD"
+
     # education_start_date = serializers.DateField(
     #     format="%Y-%m-%d", input_formats=["%d-%m-%Y", "%Y-%m-%d"]
     # )
