@@ -105,6 +105,11 @@ class Test_API_Endpoint_Throttling_Headers_Values:
     Test class to test API endpoint "crud-user-list" for headers linked throttling
     """
 
+    @pytest.fixture(autouse=True)
+    def setup_throttling(self, django_settings):
+        # Override the DEFAULT_THROTTLE_RATES['user'] setting
+        django_settings.REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"]["user"] = "2/hour"
+
     def test_throttling_settings_for_endpoint(self):
         # Create an API client
         client = APIClient()
@@ -112,7 +117,7 @@ class Test_API_Endpoint_Throttling_Headers_Values:
         headers = {"Origin": "https://web.postman.co"}
 
         # Send multiple requests to the endpoint
-        for _ in range(2):
+        for i in range(2):
             user = UserFactory.build()
             # Prepare the data dictionary, accoring to jsonschema
             data = {
@@ -127,8 +132,8 @@ class Test_API_Endpoint_Throttling_Headers_Values:
 
             # Assert the response status code
             assert response.status_code == 201
-            assert response["X-RateLimit-Limit"] == "2/hour"
-            assert response["X-RateLimit-Remaining"] == f"{1 - _}"
+            assert response["X-RateLimit-Limit"] == "200/hour"
+            assert response["X-RateLimit-Remaining"] == f"{2 - i}"
 
         # # Send one more request to the endpoint
         response = client.post(
