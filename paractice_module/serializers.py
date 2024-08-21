@@ -73,8 +73,8 @@ class EducationSerializer_Paractice_Request(serializers.ModelSerializer):
 
 class EducationSerializer_Paractice_Response(EducationSerializer_Paractice_Request):
 
-    education_start_date = serializers.DateField(formats=["%Y-%m-%d"])
-    education_end_date = serializers.DateField(formats=["%Y-%m-%d"])
+    education_start_date = serializers.DateField(format="%Y-%m-%d")
+    education_end_date = serializers.DateField(format="%Y-%m-%d")
 
     # Applying the examples in the schema using drf-spectacular
 
