@@ -114,11 +114,11 @@ class EducationSerializer_Paractice_Field_Request(serializers.ModelSerializer):
         return instance
 
     # Applying the examples in the schema using drf-spectacular
-    @extend_schema_field(OpenApiTypes.DATE)
+    @extend_schema_field(OpenApiTypes.STR)
     def get_education_start_date(self, obj):
         return "DD-mm-YYYY"
 
-    @extend_schema_field(OpenApiTypes.DATE)
+    @extend_schema_field(OpenApiTypes.STR)
     def get_education_end_date(self, obj):
         return "DD-mm-YYYY"
 
