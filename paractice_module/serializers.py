@@ -34,7 +34,7 @@ from resume.models import Education
         ),
     ],
 )
-class EducationSerializer_Paractice(serializers.ModelSerializer):
+class EducationSerializer_Paractice_Request(serializers.ModelSerializer):
 
     education_start_date = serializers.DateField(input_formats=["%d-%m-%Y"])
     education_end_date = serializers.DateField(input_formats=["%d-%m-%Y"])
@@ -70,7 +70,13 @@ class EducationSerializer_Paractice(serializers.ModelSerializer):
 
         return instance
 
-        # Applying the examples in the schema using drf-spectacular
+
+class EducationSerializer_Paractice_Response(EducationSerializer_Paractice_Request):
+
+    education_start_date = serializers.DateField(formats=["%Y-%m-%d"])
+    education_end_date = serializers.DateField(formats=["%Y-%m-%d"])
+
+    # Applying the examples in the schema using drf-spectacular
 
     # @extend_schema_field(OpenApiTypes.DATE)
     # def get_job_start_date(self, obj):
