@@ -138,6 +138,27 @@ class JobAccomplishmentSerializer(serializers.ModelSerializer):
         fields = ["job_accomplishment"]
 
 
+@extend_schema_serializer(
+    exclude_fields=("id",),
+    examples=[
+        OpenApiExample(
+            name="Example 1",
+            summary="short summary",
+            description="longer description",
+            value={
+                {"name": "eight"},
+                {"location": "North Jon"},
+                {"schoolurl": "https://www.stone-logan.com/"},
+                {"education_start_date": "01-01-2020"},
+                {"education_end_date": "31-12-2024"},
+                {"degree": " degree"},
+                {"description": "Onto production back. Response gun read child."},
+            },
+            request_only=True,  # signal that example only applies to requests
+            response_only=False,  # signal that example only applies to responses
+        ),
+    ],
+)
 class JobSerializer(serializers.ModelSerializer):
     accomplishment = JobAccomplishmentSerializer()
     job_start_date = serializers.DateField(input_formats=["%d-%m-%Y"])
