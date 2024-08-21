@@ -32,6 +32,8 @@ urlpatterns = [
     path("", Homepage.as_view(), name="Homepage"),
     path("resume/", include("resume.urls")),
     path("api/auth/", include("api_auth.urls")),
+    # For paractice purpose only
+    path("paractice/", include("paractice_module.urls")),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     # Optional UI:
     path(

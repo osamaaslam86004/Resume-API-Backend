@@ -2,10 +2,7 @@ from rest_framework import serializers
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from drf_spectacular.utils import (
-    extend_schema_field,
-    OpenApiTypes,
     OpenApiExample,
-    extend_schema,
     extend_schema_serializer,
 )
 from resume.models import (
@@ -21,10 +18,7 @@ from resume.models import (
     Publication,
 )
 from api_auth.models import CustomUser
-from resume.schema_classes_for_documentation import (
-    CustomDateField,
-    schema_personalinfo_serializer,
-)
+from resume.schema_classes_for_documentation import schema_personalinfo_serializer
 
 
 class PublicationSerializer(serializers.ModelSerializer):
@@ -162,18 +156,6 @@ class JobSerializer(serializers.ModelSerializer):
             "accomplishment",
         ]
 
-        # Applying the examples in the schema using drf-spectacular
-
-    # @extend_schema_field(OpenApiTypes.DATE)
-    # def get_job_start_date(self, obj):
-    #     return "DD-mm-YYYY"
-    #     return obj.job_start_date.strftime("%d-%m-%Y") if obj.job_start_date else None
-
-    # @extend_schema_field(OpenApiTypes.DATE)
-    # def get_job_end_date(self, obj):
-    #     return "DD-mm-YYYY"
-    #     return obj.job_end_date.strftime("%d-%m-%Y") if obj.job_end_date else None
-
 
 class EducationDetailSerializer(serializers.ModelSerializer):
     class Meta:
@@ -181,33 +163,6 @@ class EducationDetailSerializer(serializers.ModelSerializer):
         fields = ["name", "location", "degree"]
 
 
-# @extend_schema_serializer(
-#     exclude_fields=("id",),
-#     examples=[
-#         OpenApiExample(
-#             name="Example 1",
-#             summary="short summary",
-#             description="longer description",
-#             value={
-#                 "name": {"eight": True},
-#                 "location": {"North Jon": True},
-#                 "schoolurl": {"https://www.stone-logan.com/": True},
-#                 "education_start_date": {
-#                     "01-01-2020": True,
-#                     "2021-01-31": True,
-#                 },
-#                 "education_end_date": {
-#                     "01-01-2020": True,
-#                     "2021-01-31": True,
-#                 },
-#                 "degree": {"degree": True},
-#                 "description": {"Onto production back. Response gun read child.": True},
-#             },
-#             request_only=True,
-#             response_only=False,
-#         ),
-#     ],
-# )
 class EducationListCreateSerializer(serializers.ModelSerializer):
 
     education_start_date = serializers.DateField(input_formats=["%d-%m-%Y"])
@@ -244,38 +199,7 @@ class EducationListCreateSerializer(serializers.ModelSerializer):
 
         return instance
 
-    # @extend_schema_field(OpenApiTypes.DATE)
-    # def get_education_start_date(self, obj):
-    #     return "DD-mm-YYYY"
-    # return (
-    #     obj.education_start_date.strftime("%d-%m-%Y")
-    #     if obj.education_start_date
-    #     else None
-    # )
 
-    # @extend_schema_field(OpenApiTypes.DATE)
-    # def get_education_end_date(self, obj):
-    #     return "DD-mm-YYYY"
-    # return (
-    #     obj.education_end_date.strftime("%d-%m-%Y")
-    #     if obj.education_end_date
-    #     else None
-    # )
-
-
-# @extend_schema_serializer(
-#     exclude_fields=("id",),
-#     examples=[
-#         OpenApiExample(
-#             "Valid example 1",
-#             summary="short summary",
-#             description="longer description",
-#             value={"text": {"top10": True}, "text": {"top10": True}},
-#             request_only=True,
-#             response_only=False,
-#         ),
-#     ],
-# )
 class OverviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Overview
