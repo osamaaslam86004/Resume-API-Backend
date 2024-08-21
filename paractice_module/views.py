@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from resume_api.custom_user_rated_throtle_class import AnonRateThrottle
+from resume_api.custom_user_rated_throtle_class import CustomAnonRateThrottle
 from drf_spectacular.utils import extend_schema
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -25,7 +25,7 @@ class EducationCreateAPIView(APIView):
 
     parser_classes = [JSONParser]
     renderer_classes = [JSONRenderer]
-    throttle_classes = [AnonRateThrottle]
+    throttle_classes = [CustomAnonRateThrottle]
     http_method_names = ["post"]
 
     def post(self, request, format=None):
