@@ -217,12 +217,15 @@ class PersonalInfo_List_CreateView(viewsets.ModelViewSet, ValidateJson):
         methods=["POST"],
         examples=[
             OpenApiExample(
+                name="Example 1",
                 value=[
-                    {"education_start_date": "DD-MM-YYYY"},
-                    {"education_end_date": "DD-MM-YYYY"},
-                    {"job_start_date": "DD-MM-YYYY"},
-                    {"job_end_date": "DD-MM-YYYY"},
+                    {"education_start_date": "01-01-2020"},
+                    {"education_end_date": "31-12-2024"},
+                    {"job_start_date": "01-01-2015"},
+                    {"job_end_date": "31-12-2019"},
                 ],
+                summary="A simple example for creating a resume entry",
+                description="This example shows how to create a resume with sample dates.",
             )
         ],
     )
