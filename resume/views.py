@@ -1,5 +1,5 @@
 import logging
-from drf_spectacular.utils import extend_schema, OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiExample, inline_serializer
 from resume.models import PersonalInfo
 from resume.forms import (
     PersonalInfoForm,
@@ -212,9 +212,19 @@ class PersonalInfo_List_CreateView(viewsets.ModelViewSet, ValidateJson):
 
     @extend_schema(
         description="End-Point For Creating Resume",
-        request=PersonalInfo_Serializer,
-        responses=PersonalInfo_Serializer_Get_Request,
+        # request=PersonalInfo_Serializer,
+        responses={"201": PersonalInfo_Serializer_Get_Request},
         methods=["POST"],
+        examples=[
+            OpenApiExample(
+                value=[
+                    {"education_start_date": "DD-MM-YYYY"},
+                    {"education_end_date": "DD-MM-YYYY"},
+                    {"job_start_date": "DD-MM-YYYY"},
+                    {"job_end_date": "DD-MM-YYYY"},
+                ],
+            )
+        ],
     )
     def create(self, request, *args, **kwargs):
 
