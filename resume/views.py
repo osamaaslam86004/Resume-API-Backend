@@ -212,7 +212,7 @@ class PersonalInfo_List_CreateView(viewsets.ModelViewSet, ValidateJson):
 
     @extend_schema(
         description="End-Point For Creating Resume",
-        # request=PersonalInfo_Serializer,
+        request=PersonalInfo_Serializer,
         responses={"201": PersonalInfo_Serializer_Get_Request},
         methods=["POST"],
         examples=[
