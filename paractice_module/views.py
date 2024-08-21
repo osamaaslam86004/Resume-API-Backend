@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from resume_api.custom_user_rated_throtle_class import AnonRateThrottle
 from drf_spectacular.utils import extend_schema
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -22,13 +23,22 @@ class EducationCreateAPIView(APIView):
     API view to create a new Education entry.
     """
 
-    # permission_classes = [IsAuthenticated]
     parser_classes = [JSONParser]
     renderer_classes = [JSONRenderer]
+    throttle_classes = [AnonRateThrottle]
+    http_method_names = ["post"]
 
     def post(self, request, format=None):
         serializer = EducationSerializer_Paractice_Request(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def finalize_response(self, request, response, *args, **kwargs):
+        response = super().finalize_response(request, response, *args, **kwargs)
+
+        response["X-RateLimit-Limit"] = request.rate_limit["X-RateLimit-Limit"]
+        response["X-RateLimit-Remaining"] = request.rate_limit["X-RateLimit-Remaining"]
+        return response
