@@ -116,13 +116,11 @@ class EducationSerializer_Paractice_Field_Request(serializers.ModelSerializer):
     # Applying the examples in the schema using drf-spectacular
     @extend_schema_field(OpenApiTypes.DATE)
     def get_education_start_date(self, obj):
-        # return "DD-mm-YYYY"
-        return obj.job_start_date.strftime("%d-%m-%Y") if obj.job_start_date else None
+        return "DD-mm-YYYY"
 
     @extend_schema_field(OpenApiTypes.DATE)
     def get_education_end_date(self, obj):
-        # return "DD-mm-YYYY"
-        return obj.job_end_date.strftime("%d-%m-%Y") if obj.job_end_date else None
+        return "DD-mm-YYYY"
 
 
 class EducationSerializer_Paractice_Field_Response(
