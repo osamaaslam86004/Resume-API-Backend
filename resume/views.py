@@ -334,6 +334,25 @@ class PersonalInfo_List_CreateView(viewsets.ModelViewSet, ValidateJson):
         self.add_throttle_headers(request, response)
         return response
 
+    @extend_schema(
+        responses={"200": PersonalInfo_Serializer_Get_Request},
+        methods=["GET"],
+        parameters=[
+            OpenApiParameter(
+                name="user_id",
+                type=OpenApiTypes.INT,
+                location=OpenApiParameter.QUERY,
+                description="ID of the user to whom the Resume belongs.",
+            ),
+            OpenApiParameter(
+                name="id",
+                type=OpenApiTypes.INT,
+                location=OpenApiParameter.QUERY,
+                description="ID of the Resume record.",
+            ),
+        ],
+        description="Return a single Resume if both 'user_id' and 'id' are provided, and if only 'id' is provided. Return a list of all Resumes for user if only 'user_id' is provided",
+    )
     def get_personal_info_for_user(self, request, *args, **kwargs):
         user_id = request.query_params.get("user_id")
         personal_info_id = request.query_params.get("personal_info_id")
