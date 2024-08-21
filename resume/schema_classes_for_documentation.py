@@ -30,8 +30,14 @@ schema_personalinfo_serializer = {
             "name": "eight",
             "location": "North Jon",
             "schoolurl": "https://www.stone-logan.com/",
-            "education_start_date": None,
-            "education_end_date": None,
+            "education_start_date": {
+                "01-01-2020": True,
+                "2021-01-31": True,
+            },
+            "education_end_date": {
+                "01-01-2020": True,
+                "2021-01-31": True,
+            },
             "degree": " degree",
             "description": "Onto production back. Response gun read child.",
         }
@@ -42,8 +48,14 @@ schema_personalinfo_serializer = {
         "location": "Charlesville",
         "title": "Surveyor, building control_________________",
         "description": "Friend south start do win. Late wrong bank between.",
-        "job_start_date": None,
-        "job_end_date": None,
+        "job_start_date": {
+            "01-01-2020": True,
+            "2021-01-31": True,
+        },
+        "job_end_date": {
+            "01-01-2020": True,
+            "2021-01-31": True,
+        },
         "is_current": True,
         "is_public": True,
         "image": "",
@@ -85,5 +97,4 @@ schema_personalinfo_serializer = {
             "link": "http://www.davis.net/",
         },
     ],
-    "user_id": 4,
 }
