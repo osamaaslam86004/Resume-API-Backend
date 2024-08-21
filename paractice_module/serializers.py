@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from datetime import datetime
 from drf_spectacular.utils import (
     extend_schema_field,
     extend_schema_serializer,
@@ -79,8 +80,13 @@ from resume.models import Education
 
 
 class EducationSerializer_Paractice_Field_Request(serializers.ModelSerializer):
-    education_start_date = serializers.DateField(input_formats=["%d-%m-%Y"])
-    education_end_date = serializers.DateField(input_formats=["%d-%m-%Y"])
+    # Setting default values using the current date formatted as 'DD-MM-YYYY'
+    education_start_date = serializers.DateField(
+        input_formats=["%d-%m-%Y"], default=datetime.now().strftime("%d-%m-%Y")
+    )
+    education_end_date = serializers.DateField(
+        input_formats=["%d-%m-%Y"], default=datetime.now().strftime("%d-%m-%Y")
+    )
 
     class Meta:
         model = Education
@@ -114,13 +120,13 @@ class EducationSerializer_Paractice_Field_Request(serializers.ModelSerializer):
         return instance
 
     # Applying the examples in the schema using drf-spectacular
-    @extend_schema_field(OpenApiTypes.STR)
-    def get_education_start_date(self, obj):
-        return "DD-mm-YYYY"
+    # @extend_schema_field(OpenApiTypes.STR)
+    # def get_education_start_date(self, obj):
+    #     return "DD-mm-YYYY"
 
-    @extend_schema_field(OpenApiTypes.STR)
-    def get_education_end_date(self, obj):
-        return "DD-mm-YYYY"
+    # @extend_schema_field(OpenApiTypes.STR)
+    # def get_education_end_date(self, obj):
+    #     return "DD-mm-YYYY"
 
 
 class EducationSerializer_Paractice_Field_Response(
