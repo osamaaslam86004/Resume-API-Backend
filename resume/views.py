@@ -1,5 +1,5 @@
 import logging
-from drf_spectacular.utils import extend_schema, OpenApiExample, inline_serializer
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
 from resume.models import PersonalInfo
 from resume.forms import (
     PersonalInfoForm,
@@ -380,6 +380,35 @@ class PersonalInfo_List_CreateView(viewsets.ModelViewSet, ValidateJson):
         self.add_throttle_headers(request, response)
         return response
 
+    @extend_schema(
+        request=PersonalInfo_Serializer,
+        responses={"200": PersonalInfo_Serializer_Get_Request},
+        methods=["PATCH", "PUT"],
+        parameters=[
+            OpenApiParameter(
+                name="user_id",
+                type=OpenApiTypes.INT,
+                location=OpenApiParameter.QUERY,
+                description="ID of the user to whom the Resume belongs.",
+                required=True,
+            ),
+            OpenApiParameter(
+                name="id",
+                type=OpenApiTypes.INT,
+                location=OpenApiParameter.QUERY,
+                description="ID of the Resume record.",
+                required=True,
+            ),
+            OpenApiParameter(
+                name="partial",
+                type=OpenApiTypes.BOOL,
+                location=OpenApiParameter.QUERY,
+                description="Update the Resume if 'partial' is not provided otherwise perfom 'Partial Update'. 'partial' is case in-sensitive",
+                required=False,
+            ),
+        ],
+        description="Update or partially update a Resume.",
+    )
     def patch_personal_info_for_user(self, request, *args, **kwargs):
         user_id = request.query_params.get("user_id")
         id = request.query_params.get("id")
@@ -408,7 +437,7 @@ class PersonalInfo_List_CreateView(viewsets.ModelViewSet, ValidateJson):
                 return response
         else:
             response = Response(
-                {"error": "'user_id' or 'id' is not provided"},
+                {"error": "'user_id' and 'id' is not provided"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
             self.add_throttle_headers(request, response)

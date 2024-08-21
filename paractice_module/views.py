@@ -26,7 +26,7 @@ class EducationCreateAPIView(APIView):
     parser_classes = [JSONParser]
     renderer_classes = [JSONRenderer]
     throttle_classes = [CustomAnonRateThrottle]
-    http_method_names = ["post"]
+    http_method_names = ["post", "options"]
 
     def post(self, request, format=None):
         serializer = EducationSerializer_Paractice_Request(data=request.data)
