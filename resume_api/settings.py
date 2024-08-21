@@ -268,10 +268,11 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "Resume API",
     "DESCRIPTION": "API documentation for Resume API",
     "VERSION": "1.0.0",
-    # Update with the correct path
+    # Method: 1
     "PREPROCESSING_HOOKS": [
         "resume_api.excluded_path_drf_spectacular_schema.custom_preprocessing_hook",
     ],
+    # Method 2: Use @extend_schema(exclude=True) by placing it on top of the View / Action
 }
 
 # Authorization: JWTs can contain claims (such as user roles or permissions)

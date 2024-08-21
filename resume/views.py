@@ -550,7 +550,6 @@ class PersonalInfo_List_CreateView(viewsets.ModelViewSet, ValidateJson):
             print(f"Failed to send webhook: {str(e)}")
             pass
 
-    # @extend_schema(exclude=True)
     def list(self, request, *args, **kwargs):
         response = Response(
             {"detail": 'Method "GET" not allowed.'},
@@ -559,7 +558,6 @@ class PersonalInfo_List_CreateView(viewsets.ModelViewSet, ValidateJson):
         response["Content-Type"] = "application/json"
         return response
 
-    # @extend_schema(exclude=True)
     def update(self, request, *args, **kwargs):
         response = Response(
             {"detail": 'Method "PUT" not allowed.'},
@@ -568,7 +566,6 @@ class PersonalInfo_List_CreateView(viewsets.ModelViewSet, ValidateJson):
         response["Content-Type"] = "application/json"
         return response
 
-    # @extend_schema(exclude=True)
     def partial_update(self, request, *args, **kwargs):
         response = Response(
             {"detail": 'Method "PATCH" not allowed.'},
