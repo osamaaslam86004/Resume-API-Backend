@@ -268,6 +268,7 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "Resume API",
     "DESCRIPTION": "API documentation for Resume API",
     "VERSION": "1.0.0",
+    "COMPONENT_SPLIT_REQUEST": True,
     # Method: 1
     "PREPROCESSING_HOOKS": [
         "resume_api.excluded_path_drf_spectacular_schema.custom_preprocessing_hook",
