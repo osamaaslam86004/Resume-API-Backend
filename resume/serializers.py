@@ -271,6 +271,10 @@ class OverviewSerializer(serializers.ModelSerializer):
         model = Overview
         fields = ["text"]
 
+    @extend_schema_field(OpenApiTypes.DATE)
+    def get_text(self, obj):
+        return "Overview of you"
+
     def update(self, instance, validated_data):
         instance.text = validated_data.get("text", instance.text)
         instance.save()
