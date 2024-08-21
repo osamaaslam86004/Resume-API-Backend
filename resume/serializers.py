@@ -6,6 +6,7 @@ from drf_spectacular.utils import (
     OpenApiTypes,
     OpenApiExample,
     extend_schema,
+    extend_schema_serializer,
 )
 from resume.models import (
     PersonalInfo,
@@ -266,14 +267,23 @@ class EducationListCreateSerializer(serializers.ModelSerializer):
         return instance
 
 
+@extend_schema_serializer(
+    exclude_fields=("id",),
+    examples=[
+        OpenApiExample(
+            "Valid example 1",
+            summary="short summary",
+            description="longer description",
+            value={"text": {"top10": True}, "text": {"top10": True}},
+            request_only=True,
+            response_only=False,
+        ),
+    ],
+)
 class OverviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Overview
         fields = ["text"]
-
-    @extend_schema_field(OpenApiTypes.DATE)
-    def get_text(self, obj):
-        return "Overview of you"
 
     def update(self, instance, validated_data):
         instance.text = validated_data.get("text", instance.text)
