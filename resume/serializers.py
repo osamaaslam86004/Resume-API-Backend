@@ -146,13 +146,19 @@ class JobAccomplishmentSerializer(serializers.ModelSerializer):
             summary="short summary",
             description="longer description",
             value={
-                {"name": "eight"},
-                {"location": "North Jon"},
-                {"schoolurl": "https://www.stone-logan.com/"},
-                {"education_start_date": "01-01-2020"},
-                {"education_end_date": "31-12-2024"},
-                {"degree": " degree"},
-                {"description": "Onto production back. Response gun read child."},
+                "name": {"eight": True},
+                "location": {"North Jon": True},
+                "schoolurl": {"https://www.stone-logan.com/": True},
+                "education_start_date": {
+                    "01-01-2020": True,
+                    "2021-01-31": True,
+                },
+                "education_end_date": {
+                    "01-01-2020": True,
+                    "2021-01-31": True,
+                },
+                "degree": {"degree": True},
+                "description": {"Onto production back. Response gun read child.": True},
             },
             request_only=True,  # signal that example only applies to requests
             response_only=False,  # signal that example only applies to responses
