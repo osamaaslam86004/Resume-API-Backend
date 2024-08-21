@@ -21,7 +21,10 @@ from resume.models import (
     Publication,
 )
 from api_auth.models import CustomUser
-from resume.schema_classes_for_documentation import CustomDateField
+from resume.schema_classes_for_documentation import (
+    CustomDateField,
+    schema_personalinfo_serializer,
+)
 
 
 class PublicationSerializer(serializers.ModelSerializer):
@@ -138,33 +141,6 @@ class JobAccomplishmentSerializer(serializers.ModelSerializer):
         fields = ["job_accomplishment"]
 
 
-# @extend_schema_serializer(
-#     exclude_fields=("id",),
-#     examples=[
-#         OpenApiExample(
-#             name="Example 1",
-#             summary="short summary",
-#             description="longer description",
-#             value={
-#                 "name": {"eight": True},
-#                 "location": {"North Jon": True},
-#                 "schoolurl": {"https://www.stone-logan.com/": True},
-#                 "education_start_date": {
-#                     "01-01-2020": True,
-#                     "2021-01-31": True,
-#                 },
-#                 "education_end_date": {
-#                     "01-01-2020": True,
-#                     "2021-01-31": True,
-#                 },
-#                 "degree": {"degree": True},
-#                 "description": {"Onto production back. Response gun read child.": True},
-#             },
-#             request_only=True,
-#             response_only=False,
-#         ),
-#     ],
-# )
 class JobSerializer(serializers.ModelSerializer):
     accomplishment = JobAccomplishmentSerializer()
     job_start_date = serializers.DateField(input_formats=["%d-%m-%Y"])
@@ -205,33 +181,33 @@ class EducationDetailSerializer(serializers.ModelSerializer):
         fields = ["name", "location", "degree"]
 
 
-@extend_schema_serializer(
-    exclude_fields=("id",),
-    examples=[
-        OpenApiExample(
-            name="Example 1",
-            summary="short summary",
-            description="longer description",
-            value={
-                "name": {"eight": True},
-                "location": {"North Jon": True},
-                "schoolurl": {"https://www.stone-logan.com/": True},
-                "education_start_date": {
-                    "01-01-2020": True,
-                    "2021-01-31": True,
-                },
-                "education_end_date": {
-                    "01-01-2020": True,
-                    "2021-01-31": True,
-                },
-                "degree": {"degree": True},
-                "description": {"Onto production back. Response gun read child.": True},
-            },
-            request_only=True,
-            response_only=False,
-        ),
-    ],
-)
+# @extend_schema_serializer(
+#     exclude_fields=("id",),
+#     examples=[
+#         OpenApiExample(
+#             name="Example 1",
+#             summary="short summary",
+#             description="longer description",
+#             value={
+#                 "name": {"eight": True},
+#                 "location": {"North Jon": True},
+#                 "schoolurl": {"https://www.stone-logan.com/": True},
+#                 "education_start_date": {
+#                     "01-01-2020": True,
+#                     "2021-01-31": True,
+#                 },
+#                 "education_end_date": {
+#                     "01-01-2020": True,
+#                     "2021-01-31": True,
+#                 },
+#                 "degree": {"degree": True},
+#                 "description": {"Onto production back. Response gun read child.": True},
+#             },
+#             request_only=True,
+#             response_only=False,
+#         ),
+#     ],
+# )
 class EducationListCreateSerializer(serializers.ModelSerializer):
 
     education_start_date = serializers.DateField(input_formats=["%d-%m-%Y"])
@@ -311,6 +287,19 @@ class OverviewSerializer(serializers.ModelSerializer):
         return instance
 
 
+@extend_schema_serializer(
+    exclude_fields=("id"),
+    examples=[
+        OpenApiExample(
+            name="Example 1",
+            summary="short summary",
+            description="longer description",
+            value=schema_personalinfo_serializer,
+            request_only=True,
+            response_only=False,
+        ),
+    ],
+)
 class PersonalInfo_Serializer(serializers.ModelSerializer):
     overview = OverviewSerializer()
     education = EducationListCreateSerializer(many=True)
