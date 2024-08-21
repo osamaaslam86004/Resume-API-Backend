@@ -22,7 +22,7 @@ class EducationCreateAPIView(APIView):
     API view to create a new Education entry.
     """
 
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     parser_classes = [JSONParser]
     renderer_classes = [JSONRenderer]
 

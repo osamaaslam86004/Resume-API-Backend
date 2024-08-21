@@ -15,9 +15,9 @@ from resume.models import Education
             summary="short summary",
             description="longer description",
             value={
-                "name": {"eight": True},
-                "location": {"North Jon": True},
-                "schoolurl": {"https://www.stone-logan.com/": True},
+                "name": "eight",
+                "location": "North Jon",
+                "schoolurl": "https://www.stone-logan.com/",
                 "education_start_date": {
                     "01-01-2020": True,
                     "2021-01-31": True,
@@ -26,8 +26,8 @@ from resume.models import Education
                     "01-01-2020": True,
                     "2021-01-31": True,
                 },
-                "degree": {"degree": True},
-                "description": {"Onto production back. Response gun read child.": True},
+                "degree": "degree",
+                "description": "Onto production back. Response gun read child.",
             },
             request_only=True,
             response_only=False,
