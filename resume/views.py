@@ -214,6 +214,7 @@ class PersonalInfo_List_CreateView(viewsets.ModelViewSet, ValidateJson):
         description="End-Point For Creating Resume",
         request=PersonalInfo_Serializer,
         responses=PersonalInfo_Serializer_Get_Request,
+        methods=["POST"],
     )
     def create(self, request, *args, **kwargs):
 
