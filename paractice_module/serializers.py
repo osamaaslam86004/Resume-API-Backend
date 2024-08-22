@@ -41,7 +41,7 @@ from resume.models import Education, SkillAndSkillLevel
 class EducationSerializer_Paractice_Request(serializers.ModelSerializer):
 
     education_start_date = serializers.DateField(input_formats=["%d-%m-%Y", "%Y-%m-%d"])
-    education_end_date = serializers.DateField(input_formats=["%d-%m-%Y", "%d-%m-%Y"])
+    education_end_date = serializers.DateField(input_formats=["%d-%m-%Y", "%Y-%m-%d"])
 
     class Meta:
         model = Education
