@@ -82,11 +82,11 @@ from resume.models import Education
 
 class EducationSerializer_Paractice_Field_Request(serializers.ModelSerializer):
     # Use the custom date field with specific date formats
-    education_start_date = CustomDateField(
+    education_start_date_ = CustomDateField(
         input_formats=["%d-%m-%Y", "%Y-%m-%d", "%m/%d/%Y"],
         default=lambda: datetime.now().strftime("%d-%m-%Y"),
     )
-    education_end_date = CustomDateField(
+    education_end_date_ = CustomDateField(
         input_formats=["%d-%m-%Y", "%Y-%m-%d", "%m/%d/%Y"],
         default=lambda: (datetime.now() + timedelta(days=7)).strftime("%d-%m-%Y"),
     )
@@ -97,8 +97,8 @@ class EducationSerializer_Paractice_Field_Request(serializers.ModelSerializer):
             "name",
             "location",
             "schoolurl",
-            "education_start_date",
-            "education_end_date",
+            "education_start_date_",
+            "education_end_date_",
             "degree",
             "description",
         ]
@@ -127,5 +127,5 @@ class EducationSerializer_Paractice_Field_Response(
     EducationSerializer_Paractice_Field_Request
 ):
 
-    education_start_date = serializers.DateField(format="%Y-%m-%d")
-    education_end_date = serializers.DateField(format="%Y-%m-%d")
+    education_start_date_ = serializers.DateField(format="%Y-%m-%d")
+    education_end_date_ = serializers.DateField(format="%Y-%m-%d")

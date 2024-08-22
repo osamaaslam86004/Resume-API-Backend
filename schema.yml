@@ -740,7 +740,7 @@ components:
       - education_end_date
       - education_start_date
       - name
-    EducationSerializer_Paractice_Field_Request:
+    EducationSerializer_Paractice_Field_RequestRequest:
       type: object
       properties:
         name:
@@ -755,13 +755,14 @@ components:
           format: uri
           title: School URL
           maxLength: 200
-        education_start_date:
+        education_start_date_:
           type: string
-          description: "Accepted formats: DD-MM-YYYY, YYYY-MM-DD, MM/DD/YYYY"
-
-        education_end_date:
+          format: date
+          title: 'Education start date '
+        education_end_date_:
           type: string
-          description: "Accepted formats: DD-MM-YYYY, YYYY-MM-DD, MM/DD/YYYY"
+          format: date
+          title: 'Education end date '
         degree:
           type: string
         description:
@@ -782,19 +783,21 @@ components:
           format: uri
           title: School URL
           maxLength: 200
-        education_start_date:
+        education_start_date_:
           type: string
           format: date
-        education_end_date:
+          title: 'Education start date '
+        education_end_date_:
           type: string
           format: date
+          title: 'Education end date '
         degree:
           type: string
         description:
           type: string
       required:
-      - education_end_date
-      - education_start_date
+      - education_end_date_
+      - education_start_date_
       - name
     JobAccomplishment:
       type: object
