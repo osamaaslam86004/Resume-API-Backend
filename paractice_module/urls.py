@@ -37,4 +37,4 @@ urlpatterns = [
     #     EducationCreateAPIView_Schema_Field.as_view(),
     #     name="education-create-extend-schema-field",
     # ),
-] + [path("", include(router.urls))]
+] + [path("router/", include(router.urls))]
