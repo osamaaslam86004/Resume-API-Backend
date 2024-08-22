@@ -1,4 +1,3 @@
-from rest_framework import serializers
 from resume_api.custom_user_rated_throtle_class import CustomAnonRateThrottle
 from drf_spectacular.utils import extend_schema
 from rest_framework.views import APIView
@@ -11,7 +10,6 @@ from rest_framework.renderers import JSONRenderer
 from paractice_module.serializers import (
     EducationSerializer_Paractice_Request,
     EducationSerializer_Paractice_Response,
-    SkillAndSkillLevelSerializer_Paractice,
     # EducationSerializer_Paractice_Field_Request,
     # EducationSerializer_Paractice_Field_Response,
 )
@@ -24,8 +22,7 @@ from paractice_module.serializers import (
 )
 class EducationCreateAPIView(APIView):
     """
-    API view to create a new Education entry.
-    Paractice of @extend_schema_serializer decorator
+    API view to create a new Education entry. Paractice of @extend_schema_serializer decorator
     """
 
     parser_classes = [JSONParser]
@@ -35,33 +32,6 @@ class EducationCreateAPIView(APIView):
 
     def post(self, request, format=None):
         serializer = EducationSerializer_Paractice_Request(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def finalize_response(self, request, response, *args, **kwargs):
-        response = super().finalize_response(request, response, *args, **kwargs)
-
-        response["X-RateLimit-Limit"] = request.rate_limit["X-RateLimit-Limit"]
-        response["X-RateLimit-Remaining"] = request.rate_limit["X-RateLimit-Remaining"]
-        return response
-
-
-class Skill_SkillLevel_CreateAPIView(APIView):
-    """
-    API view to create a new Skill entry.
-    Paractice of OpenAPIExample in router
-    """
-
-    parser_classes = [JSONParser]
-    renderer_classes = [JSONRenderer]
-    throttle_classes = [CustomAnonRateThrottle]
-    http_method_names = ["post", "options"]
-
-    def post(self, request, format=None):
-        serializer = SkillAndSkillLevelSerializer_Paractice(data=request.data)
         if serializer.is_valid():
             serializer.save()
 

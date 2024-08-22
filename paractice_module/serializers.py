@@ -8,7 +8,7 @@ from drf_spectacular.utils import (
     OpenApiExample,
     # OpenApiTypes,
 )
-from resume.models import Education, SkillAndSkillLevel
+from resume.models import Education
 
 
 @extend_schema_serializer(
@@ -79,13 +79,6 @@ class EducationSerializer_Paractice_Response(EducationSerializer_Paractice_Reque
 
     education_start_date = serializers.DateField(format="%Y-%m-%d")
     education_end_date = serializers.DateField(format="%Y-%m-%d")
-
-
-class SkillAndSkillLevelSerializer_Paractice(serializers.ModelSerializer):
-    class Meta:
-        model = SkillAndSkillLevel
-        fields = ["text", "skill_level"]
-        read_only_fields = ["id"]
 
 
 # class EducationSerializer_Paractice_Field_Request(serializers.ModelSerializer):
