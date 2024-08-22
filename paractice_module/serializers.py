@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from paractice_module.custom_fields import CustomDateField
 from datetime import datetime, timedelta
 from drf_spectacular.utils import (
     extend_schema_field,
@@ -80,24 +81,15 @@ from resume.models import Education
 
 
 class EducationSerializer_Paractice_Field_Request(serializers.ModelSerializer):
-    # Defining multiple input formats
-    education_start_date = serializers.DateField(
+    # Use the custom date field with specific date formats
+    education_start_date = CustomDateField(
         input_formats=["%d-%m-%Y", "%Y-%m-%d", "%m/%d/%Y"],
         default=lambda: datetime.now().strftime("%d-%m-%Y"),
     )
-    education_end_date = serializers.DateField(
+    education_end_date = CustomDateField(
         input_formats=["%d-%m-%Y", "%Y-%m-%d", "%m/%d/%Y"],
         default=lambda: (datetime.now() + timedelta(days=7)).strftime("%d-%m-%Y"),
     )
-
-    # Applying the examples in the schema using drf-spectacular
-    @extend_schema_field(OpenApiTypes.DATE)
-    def get_education_start_date(self, obj):
-        return "DD-MM-YYYY, YYYY-MM-DD, MM/DD/YYYY"
-
-    @extend_schema_field(OpenApiTypes.DATE)
-    def get_education_end_date(self, obj):
-        return "DD-MM-YYYY, YYYY-MM-DD, MM/DD/YYYY"
 
     class Meta:
         model = Education
