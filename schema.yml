@@ -1,0 +1,1426 @@
+openapi: 3.0.3
+info:
+  title: Resume API
+  version: 1.0.0
+  description: API documentation for Resume API
+paths:
+  /api/auth/crud-user/:
+    post:
+      operationId: api_auth_crud_user_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/auth/get-api-user-id-for-user/:
+    post:
+      operationId: api_auth_get_api_user_id_for_user_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/auth/token/:
+    post:
+      operationId: api_auth_token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenClaimObtainPairRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenClaimObtainPairRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenClaimObtainPairRequest'
+        required: true
+      responses:
+        '200':
+          description: No response body
+  /api/auth/token/refresh/:
+    post:
+      operationId: api_auth_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/auth/token/verify/:
+    post:
+      operationId: api_auth_token_verify_create
+      description: |-
+        Takes a token and indicates if it is valid.  This view provides no
+        information about a token's fitness for a particular use.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenVerifyRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenVerifyRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenVerifyRequest'
+        required: true
+      responses:
+        '200':
+          description: No response body
+  /api/schema/:
+    get:
+      operationId: api_schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /paractice/api/education/create/extend-schema-field:
+    post:
+      operationId: paractice_api_education_create_extend_schema_field_create
+      description: |-
+        API view to create a new Education entry.
+        Paractice of @extend_schema_field decorator, but failed
+      tags:
+      - paractice
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EducationSerializer_Paractice_Field_RequestRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EducationSerializer_Paractice_Field_Response'
+          description: ''
+  /resume/api/get-personal-info-data/:
+    post:
+      operationId: resume_api_get_personal_info_data_create
+      description: End-Point For Creating Resume
+      tags:
+      - resume
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonalInfo_Request'
+            examples:
+              Example1:
+                value:
+                  first_name: Katie
+                  middle_name: Jill
+                  last_name: Davis
+                  suffix: DDS
+                  locality: Jessica_mouth
+                  region: Alabama
+                  title: Accountant, chartered
+                  email: greenkelli@example.com
+                  linkedin: http://hutchinson.org/
+                  facebook: http://gregory.com/
+                  github: http://www.thomas-harper.com/
+                  site: http://www.phelps-hicks.com/
+                  twittername: samuel90
+                  overview:
+                    text: |-
+                      Whether order talk want result professor professional. Staff growth individual window player those five. Child government name around about.
+                      Moment ok hot court.
+                  education:
+                  - name: eight
+                    location: North Jon
+                    schoolurl: https://www.stone-logan.com/
+                    education_start_date:
+                      01-01-2020: true
+                      '2021-01-31': true
+                    education_end_date:
+                      01-01-2020: true
+                      '2021-01-31': true
+                    degree: ' degree'
+                    description: Onto production back. Response gun read child.
+                  job:
+                    company: Rodgers-Johnson_________________
+                    companyurl: http://www.osborne.net/
+                    location: Charlesville
+                    title: Surveyor, building control_________________
+                    description: Friend south start do win. Late wrong bank between.
+                    job_start_date:
+                      01-01-2020: true
+                      '2021-01-31': true
+                    job_end_date:
+                      01-01-2020: true
+                      '2021-01-31': true
+                    is_current: true
+                    is_public: true
+                    image: ''
+                    accomplishment:
+                      job_accomplishment: Range him around morning buy rest process.
+                  skill:
+                  - text: thing
+                    skill_level: Expert
+                  programming_area:
+                  - programming_area_name: FRONTEND
+                    programming_language_name: TypeScript
+                  projects:
+                  - project_name: challenge
+                    short_description: Throw list describe walk true stand try. Record
+                      miss year war stand direction. Office six car south gun.
+                    long_description: Short do machine PM value boy onto. Above company
+                      herself.
+                    link: https://www.allen-wall.com/
+                  - project_name: theory
+                    short_description: Product community scene network ground minute
+                      and. American require individual well.
+                    long_description: Usually through hear share share current course.
+                      That science floor subject war remember deep best. Throw box
+                      along real.
+                    link: http://www.pugh.com/
+                  publications:
+                  - title: Receive game we kind or.
+                    authors: Lauren Wilson
+                    journal: grow
+                    year: '2017'
+                    link: http://wilkerson.org/
+                  - title: Through floor close everything.
+                    authors: Amy Joseph
+                    journal: police
+                    year: '1980'
+                    link: http://www.davis.net/
+                summary: short summary
+                description: longer description
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalInfo_Serializer_Get_Request'
+          description: ''
+  /resume/api/get-personal-info-data/{id}/:
+    delete:
+      operationId: resume_api_get_personal_info_data_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this personal info.
+        required: true
+      tags:
+      - resume
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /resume/get-personal-info-data-for-user/:
+    get:
+      operationId: resume_get_personal_info_data_for_user_retrieve
+      description: Return a single Resume if both 'user_id' and 'id' are provided,
+        and if only 'id' is provided. Return a list of all Resumes for user if only
+        'user_id' is provided
+      parameters:
+      - in: query
+        name: id
+        schema:
+          type: integer
+        description: ID of the Resume record.
+      - in: query
+        name: user_id
+        schema:
+          type: integer
+        description: ID of the user to whom the Resume belongs.
+      tags:
+      - resume
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalInfo_Serializer_Get_Request'
+          description: ''
+  /resume/patch-put-personal-info-data-for-user/:
+    put:
+      operationId: resume_patch_put_personal_info_data_for_user_update
+      description: Update or partially update a Resume.
+      parameters:
+      - in: query
+        name: id
+        schema:
+          type: integer
+        description: ID of the Resume record.
+        required: true
+      - in: query
+        name: partial
+        schema:
+          type: boolean
+        description: Update the Resume if 'partial' is not provided otherwise perfom
+          'Partial Update'. 'partial' is case in-sensitive
+      - in: query
+        name: user_id
+        schema:
+          type: integer
+        description: ID of the user to whom the Resume belongs.
+        required: true
+      tags:
+      - resume
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonalInfo_Request'
+            examples:
+              Example1:
+                value:
+                  first_name: Katie
+                  middle_name: Jill
+                  last_name: Davis
+                  suffix: DDS
+                  locality: Jessica_mouth
+                  region: Alabama
+                  title: Accountant, chartered
+                  email: greenkelli@example.com
+                  linkedin: http://hutchinson.org/
+                  facebook: http://gregory.com/
+                  github: http://www.thomas-harper.com/
+                  site: http://www.phelps-hicks.com/
+                  twittername: samuel90
+                  overview:
+                    text: |-
+                      Whether order talk want result professor professional. Staff growth individual window player those five. Child government name around about.
+                      Moment ok hot court.
+                  education:
+                  - name: eight
+                    location: North Jon
+                    schoolurl: https://www.stone-logan.com/
+                    education_start_date:
+                      01-01-2020: true
+                      '2021-01-31': true
+                    education_end_date:
+                      01-01-2020: true
+                      '2021-01-31': true
+                    degree: ' degree'
+                    description: Onto production back. Response gun read child.
+                  job:
+                    company: Rodgers-Johnson_________________
+                    companyurl: http://www.osborne.net/
+                    location: Charlesville
+                    title: Surveyor, building control_________________
+                    description: Friend south start do win. Late wrong bank between.
+                    job_start_date:
+                      01-01-2020: true
+                      '2021-01-31': true
+                    job_end_date:
+                      01-01-2020: true
+                      '2021-01-31': true
+                    is_current: true
+                    is_public: true
+                    image: ''
+                    accomplishment:
+                      job_accomplishment: Range him around morning buy rest process.
+                  skill:
+                  - text: thing
+                    skill_level: Expert
+                  programming_area:
+                  - programming_area_name: FRONTEND
+                    programming_language_name: TypeScript
+                  projects:
+                  - project_name: challenge
+                    short_description: Throw list describe walk true stand try. Record
+                      miss year war stand direction. Office six car south gun.
+                    long_description: Short do machine PM value boy onto. Above company
+                      herself.
+                    link: https://www.allen-wall.com/
+                  - project_name: theory
+                    short_description: Product community scene network ground minute
+                      and. American require individual well.
+                    long_description: Usually through hear share share current course.
+                      That science floor subject war remember deep best. Throw box
+                      along real.
+                    link: http://www.pugh.com/
+                  publications:
+                  - title: Receive game we kind or.
+                    authors: Lauren Wilson
+                    journal: grow
+                    year: '2017'
+                    link: http://wilkerson.org/
+                  - title: Through floor close everything.
+                    authors: Amy Joseph
+                    journal: police
+                    year: '1980'
+                    link: http://www.davis.net/
+                summary: short summary
+                description: longer description
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalInfo_Serializer_Get_Request'
+          description: ''
+    patch:
+      operationId: resume_patch_put_personal_info_data_for_user_partial_update
+      description: Update or partially update a Resume.
+      parameters:
+      - in: query
+        name: id
+        schema:
+          type: integer
+        description: ID of the Resume record.
+        required: true
+      - in: query
+        name: partial
+        schema:
+          type: boolean
+        description: Update the Resume if 'partial' is not provided otherwise perfom
+          'Partial Update'. 'partial' is case in-sensitive
+      - in: query
+        name: user_id
+        schema:
+          type: integer
+        description: ID of the user to whom the Resume belongs.
+        required: true
+      tags:
+      - resume
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPersonalInfo_Request'
+            examples:
+              Example1:
+                value:
+                  first_name: Katie
+                  middle_name: Jill
+                  last_name: Davis
+                  suffix: DDS
+                  locality: Jessica_mouth
+                  region: Alabama
+                  title: Accountant, chartered
+                  email: greenkelli@example.com
+                  linkedin: http://hutchinson.org/
+                  facebook: http://gregory.com/
+                  github: http://www.thomas-harper.com/
+                  site: http://www.phelps-hicks.com/
+                  twittername: samuel90
+                  overview:
+                    text: |-
+                      Whether order talk want result professor professional. Staff growth individual window player those five. Child government name around about.
+                      Moment ok hot court.
+                  education:
+                  - name: eight
+                    location: North Jon
+                    schoolurl: https://www.stone-logan.com/
+                    education_start_date:
+                      01-01-2020: true
+                      '2021-01-31': true
+                    education_end_date:
+                      01-01-2020: true
+                      '2021-01-31': true
+                    degree: ' degree'
+                    description: Onto production back. Response gun read child.
+                  job:
+                    company: Rodgers-Johnson_________________
+                    companyurl: http://www.osborne.net/
+                    location: Charlesville
+                    title: Surveyor, building control_________________
+                    description: Friend south start do win. Late wrong bank between.
+                    job_start_date:
+                      01-01-2020: true
+                      '2021-01-31': true
+                    job_end_date:
+                      01-01-2020: true
+                      '2021-01-31': true
+                    is_current: true
+                    is_public: true
+                    image: ''
+                    accomplishment:
+                      job_accomplishment: Range him around morning buy rest process.
+                  skill:
+                  - text: thing
+                    skill_level: Expert
+                  programming_area:
+                  - programming_area_name: FRONTEND
+                    programming_language_name: TypeScript
+                  projects:
+                  - project_name: challenge
+                    short_description: Throw list describe walk true stand try. Record
+                      miss year war stand direction. Office six car south gun.
+                    long_description: Short do machine PM value boy onto. Above company
+                      herself.
+                    link: https://www.allen-wall.com/
+                  - project_name: theory
+                    short_description: Product community scene network ground minute
+                      and. American require individual well.
+                    long_description: Usually through hear share share current course.
+                      That science floor subject war remember deep best. Throw box
+                      along real.
+                    link: http://www.pugh.com/
+                  publications:
+                  - title: Receive game we kind or.
+                    authors: Lauren Wilson
+                    journal: grow
+                    year: '2017'
+                    link: http://wilkerson.org/
+                  - title: Through floor close everything.
+                    authors: Amy Joseph
+                    journal: police
+                    year: '1980'
+                    link: http://www.davis.net/
+                summary: short summary
+                description: longer description
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalInfo_Serializer_Get_Request'
+          description: ''
+components:
+  schemas:
+    EducationListCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 250
+        location:
+          type: string
+          maxLength: 250
+        schoolurl:
+          type: string
+          format: uri
+          title: School URL
+          maxLength: 200
+        education_start_date:
+          type: string
+          format: date
+        education_end_date:
+          type: string
+          format: date
+        degree:
+          type: string
+        description:
+          type: string
+      required:
+      - education_end_date
+      - education_start_date
+      - name
+    EducationListCreateSerializer_Get_Request:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 250
+        location:
+          type: string
+          maxLength: 250
+        schoolurl:
+          type: string
+          format: uri
+          title: School URL
+          maxLength: 200
+        education_start_date:
+          type: string
+          format: date
+        education_end_date:
+          type: string
+          format: date
+        degree:
+          type: string
+        description:
+          type: string
+      required:
+      - education_end_date
+      - education_start_date
+      - name
+    EducationSerializer_Paractice_Field_Request:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 250
+        location:
+          type: string
+          maxLength: 250
+        schoolurl:
+          type: string
+          format: uri
+          title: School URL
+          maxLength: 200
+        education_start_date:
+          type: string
+          description: "Accepted formats: DD-MM-YYYY, YYYY-MM-DD, MM/DD/YYYY"
+
+        education_end_date:
+          type: string
+          description: "Accepted formats: DD-MM-YYYY, YYYY-MM-DD, MM/DD/YYYY"
+        degree:
+          type: string
+        description:
+          type: string
+      required:
+      - name
+    EducationSerializer_Paractice_Field_Response:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 250
+        location:
+          type: string
+          maxLength: 250
+        schoolurl:
+          type: string
+          format: uri
+          title: School URL
+          maxLength: 200
+        education_start_date:
+          type: string
+          format: date
+        education_end_date:
+          type: string
+          format: date
+        degree:
+          type: string
+        description:
+          type: string
+      required:
+      - education_end_date
+      - education_start_date
+      - name
+    JobAccomplishment:
+      type: object
+      properties:
+        job_accomplishment:
+          type: string
+      required:
+      - job_accomplishment
+    JobAccomplishmentRequest:
+      type: object
+      properties:
+        job_accomplishment:
+          type: string
+          minLength: 1
+      required:
+      - job_accomplishment
+    JobRequest:
+      type: object
+      properties:
+        company:
+          type: string
+          minLength: 1
+          maxLength: 250
+        companyurl:
+          type: string
+          format: uri
+          title: Company URL
+          maxLength: 200
+        location:
+          type: string
+          maxLength: 250
+        title:
+          type: string
+          maxLength: 250
+        description:
+          type: string
+        job_start_date:
+          type: string
+          format: date
+        job_end_date:
+          type: string
+          format: date
+        is_current:
+          type: boolean
+        is_public:
+          type: boolean
+        image:
+          type: string
+          description: path to company image, local or otherwise
+          maxLength: 250
+        accomplishment:
+          $ref: '#/components/schemas/JobAccomplishmentRequest'
+      required:
+      - accomplishment
+      - company
+      - job_end_date
+      - job_start_date
+    JobSerializer_Get_Request:
+      type: object
+      properties:
+        company:
+          type: string
+          maxLength: 250
+        companyurl:
+          type: string
+          format: uri
+          title: Company URL
+          maxLength: 200
+        location:
+          type: string
+          maxLength: 250
+        title:
+          type: string
+          maxLength: 250
+        description:
+          type: string
+        job_start_date:
+          type: string
+          format: date
+        job_end_date:
+          type: string
+          format: date
+        is_current:
+          type: boolean
+        is_public:
+          type: boolean
+        image:
+          type: string
+          description: path to company image, local or otherwise
+          maxLength: 250
+        accomplishment:
+          $ref: '#/components/schemas/JobAccomplishment'
+      required:
+      - accomplishment
+      - company
+      - job_end_date
+      - job_start_date
+    NullEnum:
+      enum:
+      - null
+    Overview:
+      type: object
+      properties:
+        text:
+          type: string
+      required:
+      - text
+    OverviewRequest:
+      type: object
+      properties:
+        text:
+          type: string
+          minLength: 1
+      required:
+      - text
+    PatchedPersonalInfo_Request:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        middle_name:
+          type: string
+          maxLength: 255
+        last_name:
+          type: string
+          maxLength: 255
+        suffix:
+          type: string
+          description: e.g. PhD
+          maxLength: 255
+        locality:
+          type: string
+          description: e.g. city such as Boston
+          maxLength: 255
+        region:
+          type: string
+          description: e.g. MA or Italy
+          maxLength: 255
+        title:
+          type: string
+          description: e.g. Developer
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        linkedin:
+          type: string
+          format: uri
+          maxLength: 200
+        facebook:
+          type: string
+          format: uri
+          maxLength: 200
+        github:
+          type: string
+          format: uri
+          maxLength: 200
+        site:
+          type: string
+          format: uri
+          maxLength: 200
+        twittername:
+          type: string
+          maxLength: 100
+        overview:
+          $ref: '#/components/schemas/OverviewRequest'
+        education:
+          type: array
+          items:
+            $ref: '#/components/schemas/EducationListCreateRequest'
+        skill:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkillAndSkillLevelRequest'
+        job:
+          $ref: '#/components/schemas/JobRequest'
+        programming_area:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProgrammingAreaRequest'
+        projects:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectsRequest'
+        publications:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicationRequest'
+    PersonalInfo_Request:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        middle_name:
+          type: string
+          maxLength: 255
+        last_name:
+          type: string
+          maxLength: 255
+        suffix:
+          type: string
+          description: e.g. PhD
+          maxLength: 255
+        locality:
+          type: string
+          description: e.g. city such as Boston
+          maxLength: 255
+        region:
+          type: string
+          description: e.g. MA or Italy
+          maxLength: 255
+        title:
+          type: string
+          description: e.g. Developer
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        linkedin:
+          type: string
+          format: uri
+          maxLength: 200
+        facebook:
+          type: string
+          format: uri
+          maxLength: 200
+        github:
+          type: string
+          format: uri
+          maxLength: 200
+        site:
+          type: string
+          format: uri
+          maxLength: 200
+        twittername:
+          type: string
+          maxLength: 100
+        overview:
+          $ref: '#/components/schemas/OverviewRequest'
+        education:
+          type: array
+          items:
+            $ref: '#/components/schemas/EducationListCreateRequest'
+        skill:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkillAndSkillLevelRequest'
+        job:
+          $ref: '#/components/schemas/JobRequest'
+        programming_area:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProgrammingAreaRequest'
+        projects:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectsRequest'
+        publications:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicationRequest'
+      required:
+      - education
+      - first_name
+      - job
+      - overview
+      - programming_area
+      - projects
+      - publications
+      - skill
+      - user_id
+    PersonalInfo_Serializer_Get_Request:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        first_name:
+          type: string
+          maxLength: 255
+        middle_name:
+          type: string
+          maxLength: 255
+        last_name:
+          type: string
+          maxLength: 255
+        suffix:
+          type: string
+          description: e.g. PhD
+          maxLength: 255
+        locality:
+          type: string
+          description: e.g. city such as Boston
+          maxLength: 255
+        region:
+          type: string
+          description: e.g. MA or Italy
+          maxLength: 255
+        title:
+          type: string
+          description: e.g. Developer
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        linkedin:
+          type: string
+          format: uri
+          maxLength: 200
+        facebook:
+          type: string
+          format: uri
+          maxLength: 200
+        github:
+          type: string
+          format: uri
+          maxLength: 200
+        site:
+          type: string
+          format: uri
+          maxLength: 200
+        twittername:
+          type: string
+          maxLength: 100
+        overview:
+          $ref: '#/components/schemas/Overview'
+        education:
+          type: array
+          items:
+            $ref: '#/components/schemas/EducationListCreateSerializer_Get_Request'
+        skill:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkillAndSkillLevel'
+        job:
+          $ref: '#/components/schemas/JobSerializer_Get_Request'
+        programming_area:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProgrammingArea'
+        projects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Projects'
+        publications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Publication'
+      required:
+      - education
+      - first_name
+      - job
+      - overview
+      - programming_area
+      - projects
+      - publications
+      - skill
+      - user_id
+    ProgrammingArea:
+      type: object
+      properties:
+        programming_area_name:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/ProgrammingAreaNameEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        programming_language_name:
+          type: string
+          nullable: true
+          maxLength: 25
+    ProgrammingAreaNameEnum:
+      enum:
+      - FRONTEND
+      - BACKEND
+      type: string
+      description: |-
+        * `FRONTEND` - Frontend
+        * `BACKEND` - Backend
+    ProgrammingAreaRequest:
+      type: object
+      properties:
+        programming_area_name:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/ProgrammingAreaNameEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        programming_language_name:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 25
+    Projects:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        project_name:
+          type: string
+          maxLength: 255
+        short_description:
+          type: string
+          description: Text shown in project list
+        long_description:
+          type: string
+          description: Text shown in modals appearing when clicking on images
+        link:
+          type: string
+          format: uri
+          maxLength: 200
+        personal_info:
+          type: integer
+          nullable: true
+      required:
+      - id
+      - project_name
+    ProjectsRequest:
+      type: object
+      properties:
+        project_name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        short_description:
+          type: string
+          description: Text shown in project list
+        long_description:
+          type: string
+          description: Text shown in modals appearing when clicking on images
+        link:
+          type: string
+          format: uri
+          maxLength: 200
+        personal_info:
+          type: integer
+          nullable: true
+      required:
+      - project_name
+    Publication:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 250
+        authors:
+          type: string
+        journal:
+          type: string
+          maxLength: 150
+        year:
+          type: integer
+        link:
+          type: string
+          format: uri
+          title: Publication URL
+          maxLength: 200
+      required:
+      - authors
+      - journal
+      - title
+    PublicationRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 250
+        authors:
+          type: string
+          minLength: 1
+        journal:
+          type: string
+          minLength: 1
+          maxLength: 150
+        year:
+          type: integer
+        link:
+          type: string
+          format: uri
+          title: Publication URL
+          maxLength: 200
+      required:
+      - authors
+      - journal
+      - title
+    SkillAndSkillLevel:
+      type: object
+      properties:
+        text:
+          type: string
+        skill_level:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/SkillLevelEnum'
+          - $ref: '#/components/schemas/NullEnum'
+      required:
+      - text
+    SkillAndSkillLevelRequest:
+      type: object
+      properties:
+        text:
+          type: string
+          minLength: 1
+        skill_level:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/SkillLevelEnum'
+          - $ref: '#/components/schemas/NullEnum'
+      required:
+      - text
+    SkillLevelEnum:
+      enum:
+      - Beginner
+      - Intermediate
+      - Advanced
+      - Expert
+      type: string
+      description: |-
+        * `Beginner` - Beginner
+        * `Intermediate` - Intermediate
+        * `Advanced` - Advanced
+        * `Expert` - Expert
+    TokenClaimObtainPairRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - password
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+      required:
+      - access
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - refresh
+    TokenVerifyRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - token
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        username:
+          type: string
+          maxLength: 150
+        is_staff:
+          type: boolean
+        is_active:
+          type: boolean
+      required:
+      - email
+      - id
+      - username
+    UserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        username:
+          type: string
+          minLength: 1
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        is_staff:
+          type: boolean
+        is_active:
+          type: boolean
+      required:
+      - email
+      - password
+      - username
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
