@@ -165,6 +165,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://diverse-intense-whippet.ngrok-free.app",
     "http://127.0.0.1:5500",
     "https://resume-builder-integrated-with-resume-api.vercel.app",
+    "https://resume-builder-pwa.vercel.app/",
 ]
 
 CORS_ALLOW_METHODS = [
@@ -193,6 +194,7 @@ CORS_ALLOW_HEADERS = [
 if DEBUG:
     CSRF_TRUSTED_ORIGINS = [
         "http://127.0.0.1:5500",
+        "https://web.postman.co",
         "https://diverse-intense-whippet.ngrok-free.app",
         "https://osamaaslam.pythonanywhere.com",
         "https://osama11111.pythonanywhere.com",
@@ -229,25 +231,6 @@ AUTH_USER_MODEL = "api_auth.CustomUser"
 # In stateless authentication, the server doesn't keep track of the user's state (session).
 # Each request from the client must contain all the information necessary to authenticate the user,
 # including the JWT token. The server verifies this token on every request to ensure the user is authenticated.
-
-# How to Use JWT Stateless Authentication in Django Rest Framework?
-# In Django Rest Framework, you've configured the rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication
-# as one of the default authentication classes. This means that any request coming to your API endpoints
-#  needs to include a valid JWT token in the request headers for authentication.
-
-# Checking Token Validity
-# When a request comes in, Django Rest Framework automatically checks the JWT token provided
-# in the request headers. It verifies the token's signature to ensure it hasn't been tampered with.
-# If the signature is valid and the token hasn't expired, the request is considered authenticated,
-# and Django Rest Framework proceeds with processing the request.
-
-# Handling Authentication Errors
-# If the token is missing or invalid, Django Rest Framework returns an authentication error,
-# indicating that the user is not authenticated. It's then up to the client-side application
-# to handle this error appropriately, usually by prompting the user to log in again or refreshing
-# the token if it has expired.
-
-
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_THROTTLE_CLASSES": [

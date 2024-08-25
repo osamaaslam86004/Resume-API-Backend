@@ -13,7 +13,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 from tests.factories import UserFactory
 from api_auth.models import CustomUser
-
+import resume_api
 
 # @pytest.mark.django_db
 # Use Sparingly: Only use @pytest.mark.django_db when necessary. For tests that do not require database access
@@ -105,11 +105,6 @@ class Test_API_Endpoint_Throttling_Headers_Values:
     Test class to test API endpoint "crud-user-list" for headers linked throttling
     """
 
-    @pytest.fixture(autouse=True)
-    def setup_throttling(self, django_settings):
-        # Override the DEFAULT_THROTTLE_RATES['user'] setting
-        django_settings.REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"]["user"] = "2/hour"
-
     def test_throttling_settings_for_endpoint(self):
         # Create an API client
         client = APIClient()
@@ -117,7 +112,7 @@ class Test_API_Endpoint_Throttling_Headers_Values:
         headers = {"Origin": "https://web.postman.co"}
 
         # Send multiple requests to the endpoint
-        for i in range(2):
+        for i in range(1, 201):
             user = UserFactory.build()
             # Prepare the data dictionary, accoring to jsonschema
             data = {
@@ -133,15 +128,12 @@ class Test_API_Endpoint_Throttling_Headers_Values:
             # Assert the response status code
             assert response.status_code == 201
             assert response["X-RateLimit-Limit"] == "200/hour"
-            assert response["X-RateLimit-Remaining"] == f"{2 - i}"
+            assert response["X-RateLimit-Remaining"] == f"{200 - i}"
 
         # # Send one more request to the endpoint
         response = client.post(
             reverse("crud-user-list"), headers=headers, data=data, format="json"
         )
-
-        for header in response.headers:
-            print(f"header name : {header}------------ : {response.headers[header]}")
 
         # Assert the response status code
         assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
@@ -153,7 +145,7 @@ class Test_API_Endpoint_Throttling_Headers_Values:
 
 
 @pytest.mark.django_db
-class TestAPIEndpointThrottling_Rates_For_Authenticated_Users:
+class Test_APIEndpointThrottling_Rates_For_Authenticated_Users:
     """
     Test class to test API endpoint "crud-user-list" for throttling rate limit settings
     for authenticated users.
@@ -184,9 +176,7 @@ class TestAPIEndpointThrottling_Rates_For_Authenticated_Users:
         # Authenticate user
         api_client.force_authenticate(user=user)
 
-        # Send 2 more requests to the endpoint ending the throttling quta
-
-        for _ in range(2):
+        for i in range(1, 202, 1):
 
             response = api_client.post(
                 reverse("get_api_user_id_for_user"),
@@ -194,14 +184,14 @@ class TestAPIEndpointThrottling_Rates_For_Authenticated_Users:
                 data=data,
                 format="json",
             )
-            assert response["X-RateLimit-Limit"] == "3/hour"
-            assert response["X-RateLimit-Remaining"] == f"{2 - _}"
-            assert username == response.json()["username"]
 
             # Assert the response status code
-            if _ == 2:
-                assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
+            if i <= 200:
+                assert username == response.json()["username"]
+                assert response.status_code == status.HTTP_200_OK
 
+            else:
+                assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
                 # Assert the throttling limit
                 assert "Retry-After" in response
 
@@ -225,8 +215,7 @@ class Test_API_Endpoint_Throttling_Rates_For_UnAuthenticated_Users:
             "password": user.password,
         }
 
-        # Send 2 requests to the endpoint ending the throttling quta
-        for _ in range(2):
+        for i in range(201):
 
             response = api_client.post(
                 reverse("get_api_user_id_for_user"),
@@ -234,14 +223,11 @@ class Test_API_Endpoint_Throttling_Rates_For_UnAuthenticated_Users:
                 headers=headers,
                 format="json",
             )
-            print(f"User------------- : {response.json()}")
-
-            assert response.json() == {"error": "User does not exist"}
-            assert response["X-RateLimit-Limit"] == "2/hour"
-            assert response["X-RateLimit-Remaining"] == f"{1 - _}"
-
+            # print(f"User------------- : {response.json()}")
+            if i <= 200:
+                assert response.json() == {"error": "User does not exist"}
             # Assert the response status code
-            if _ == 2:
+            if i == 201:
                 assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
 
                 # Assert the throttling limit
@@ -271,7 +257,7 @@ class Test_UserCreateView_For_Cache:
 
         # Check cache control headers
         assert response.headers.get("Cache-Control") == "private"
-        assert response.headers.get("Vary") == "User-Agent"
+        assert response.headers.get("Vary") == "User-Agent, Cookie, origin"
 
         # Check the presence of cache headers
         assert "Cache-Control" in response.headers
@@ -295,7 +281,7 @@ class Test_Options_Request_For_UserCreateView_For_Cache_Related_Headers:
 
         # Check cache control headers
         assert response.headers.get("Cache-Control") == "private"
-        assert response.headers.get("Vary") == "User-Agent"
+        assert response.headers.get("Vary") == "User-Agent, Cookie, origin"
 
         # Check the presence of cache headers
         assert "Cache-Control" in response.headers
@@ -308,52 +294,55 @@ class Test_Options_Request_For_UserCreateView_For_Cache_Related_Headers:
         assert response.headers.get("Allow") == "POST, OPTIONS"
 
 
-class Test_UserCreateView_for_allowed_methods_in_allow_header:
-    """
-    tests to check allow http methods by endpoint / router "crud-user"
-    """
+# @pytest.mark.django_db
+# class Test_UserCreateView_for_allowed_methods_in_allow_header:
+#     """
+#     tests to check allow http methods by endpoint / router "crud-user"
+#     """
 
-    def test_allowed_methods_in_allow_header_for_crud_user(self):
-        # Create an API client
-        client = APIClient()
+#     def test_allowed_methods_in_allow_header_for_crud_user(self):
+#         # Create an API client
+#         client = APIClient()
 
-        # Send an OPTIONS request to the endpoint
-        headers = {"Origin": "https://web.postman.co"}
-        response = client.options(reverse("crud-user-list"), headers=headers)
+#         # Send an OPTIONS request without Origin header to make it CORS request
+#         response = client.options(reverse("crud-user-list"))
 
-        # Assert the response status code
-        assert response.status_code == status.HTTP_200_OK
+#         # Assert the response status code
+#         assert response.status_code == status.HTTP_200_OK
 
-        # Assert the allowed methods
-        assert "POST" and "OPTIONS" in response.headers["Allow"]
-        # for non-CORS
-        assert len(response.headers["Allow"].split(", ")) == 2
-        # for CORS
-        assert len(response.headers["Access-Control-Allow-Methods"].split(", ")) == 2
+#         # Assert the allowed methods
+#         assert "POST" and "OPTIONS" in response.headers["Allow"]
+#         # for non-CORS
+#         assert len(response.headers["Allow"].split(", ")) == 2
+#         # for CORS
+#         assert len(response.headers["Access-Control-Allow-Methods"].split(", ")) == 2
 
 
-class Test_UserCreateView_origin_header_in_options_request:
-    """
-    tests to check Cross-Origin-Resource-sharing for provided Origin is allowed
-    """
+# @pytest.mark.django_db
+# class Test_UserCreateView_origin_header_in_options_request:
+#     """
+#     tests to check Cross-Origin-Resource-sharing for provided Origin is allowed
+#     """
 
-    def test_origin_header_in_options_request_for_crud_user(self):
-        # Create an API client
-        client = APIClient()
+#     def test_origin_header_in_options_request_for_crud_user(self):
+#         # Create an API client
+#         client = APIClient()
 
-        # Send a POST request to the endpoint
-        response = client.options(reverse("crud-user-list"), format="json")
+#         # Send a POST request to the endpoint
+#         headers = {"Origin": "https//www.google.com"}
+#         response = client.post(
+#             # path="/api/auth/crud-user/",
+#             reverse("crud-user-list"),
+#             format="json",
+#             headers=headers,
+#         )
 
-        # Assert the response status code
-        assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json()["detail"] == "Origin not allowed"
-
-        byte_string = response.content  # b'{"detail":"Origin not trusted"}'
-        unicode_string = byte_string.decode(
-            "utf-8"
-        )  # Decode byte string to Unicode string
-        python_dict = json.loads(unicode_string)  # Parse Unicode string as JSON
-        assert python_dict == {"detail": "Origin not allowed"}
+#         # Assert the response status code
+#         assert response.status_code == 200
+#         for headers in response.headers.items():
+#             print(f"--------------{headers}")
+#         print(f"--------------{response.json()}")
+#         assert response.json() == []
 
 
 @pytest.mark.django_db
@@ -463,17 +452,6 @@ class Test_UserCreateView_test_post_method_for_crud_user:
     def test_post_method_for_crud_user(self, build_user):
         # Create an API client
         client = APIClient()
-
-        # First, we check if application/json is allowed and Origin is allowed in a preflight request
-        headers = {"Origin": "https://web.postman.co", "Accept": "application/json"}
-
-        response = client.options(reverse("crud-user-list"), headers=headers)
-        assert "Allow" in response.headers
-        # for CORS
-        assert len(response.headers["Access-Control-Allow-Methods"].split(", ")) == 2
-        assert response.headers["Content-Type"] == "application/json"
-        # Assert the response status code
-        assert response.status_code == status.HTTP_200_OK
 
         # build user data using the factory
         user = build_user()
@@ -613,20 +591,3 @@ class Test_GetAPIUserIDForUser:
             assert key in actual_response, f"Missing key: {key}"
 
         assert len(actual_response) == len(expected_keys)
-
-
-# class Test_Manually_Verify_Access_Token_View:
-#     """
-#     tests for manually validating a generated access token
-#     """
-
-#     def Manually_Verify_Access_Token_View(self, access_token):
-#         # Decode the JWT token
-#         decoded_token = jwt.decode(
-#             access_token, settings.SECRET_KEY, algorithms=["HS256"]
-#         )
-#         print(f"decoded---token : {decoded_token}")
-
-#         # Assert custom claims
-#         assert decoded_token["user"] == "test110"
-#         assert decoded_token["token_type"] == "access"

@@ -64,6 +64,15 @@ class UserCreateView(viewsets.ModelViewSet, ValidateJson):
         response["X-RateLimit-Limit"] = request.rate_limit["X-RateLimit-Limit"]
         response["X-RateLimit-Remaining"] = request.rate_limit["X-RateLimit-Remaining"]
 
+    # Overriding because by default options methods returns all 6 HTTP-Methods
+    # Post, Put, Patch, Get, Head, Options
+    def options(self, request, *args, **kwargs):
+
+        response = super().options(request, *args, **kwargs)
+        response["Allow"] = "POST", "OPTIONS"
+        response["Access-Control-Allow-Methods"] = "POST", "OPTIONS"
+        return response
+
     def create(self, request, *args, **kwargs):
         # Validate request data
         try:
