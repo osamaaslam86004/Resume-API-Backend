@@ -165,8 +165,8 @@ class EducationDetailSerializer(serializers.ModelSerializer):
 
 class EducationListCreateSerializer(serializers.ModelSerializer):
 
-    education_start_date = serializers.DateField(input_formats=["%d-%m-%Y"])
-    education_end_date = serializers.DateField(input_formats=["%d-%m-%Y"])
+    education_start_date = serializers.DateField(input_formats=["%d-%m-%Y", "%Y-%m-%d"])
+    education_end_date = serializers.DateField(input_formats=["%d-%m-%Y", "%Y-%m-%d"])
 
     class Meta:
         model = Education
