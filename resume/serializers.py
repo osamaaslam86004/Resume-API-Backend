@@ -137,8 +137,8 @@ class JobAccomplishmentSerializer(serializers.ModelSerializer):
 
 class JobSerializer(serializers.ModelSerializer):
     accomplishment = JobAccomplishmentSerializer()
-    job_start_date = serializers.DateField(input_formats=["%d-%m-%Y"])
-    job_end_date = serializers.DateField(input_formats=["%d-%m-%Y"])
+    job_start_date = serializers.DateField(input_formats=["%d-%m-%Y", "%Y-%m-%d"])
+    job_end_date = serializers.DateField(input_formats=["%d-%m-%Y", "%Y-%m-%d"])
 
     class Meta:
         model = Job
