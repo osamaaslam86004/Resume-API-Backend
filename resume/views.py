@@ -128,7 +128,7 @@ class PersonalInfoWizard(SessionWizardView):
             projects.save()
 
             messages.success(self.request, "CV created successfully!")
-            if settings.DEBUG:
+            if not settings.DEBUG:
                 return HttpResponsePermanentRedirect(
                     "https://diverse-intense-whippet.ngrok-free.app/"
                 )
@@ -180,7 +180,7 @@ class PersonalInfoWizard(SessionWizardView):
             projects.save()
 
             messages.success(self.request, "CV created successfully!")
-            if settings.DEBUG:
+            if not settings.DEBUG:
                 return HttpResponsePermanentRedirect(
                     "https://diverse-intense-whippet.ngrok-free.app/"
                 )
