@@ -259,28 +259,24 @@ class PersonalInfo_List_CreateView(viewsets.ModelViewSet, ValidateJson):
 
                 if user_id:
                     transaction.on_commit(
-                        lambda: (
-                            self.send_notification(
-                                event="cv_updated",
-                                status_="UPDATED",
-                                exception=None,
-                                user_id=user_id,
-                                id=id,
-                                request=self.request,
-                            )
+                        lambda: self.send_notification(
+                            event="cv_updated",
+                            status_="UPDATED",
+                            exception=None,
+                            user_id=user_id,
+                            id=id,
+                            request=self.request,
                         )
                     )
                 else:
                     transaction.on_commit(
-                        lambda: (
-                            self.send_notification(
-                                event="cv_updated",
-                                status_="UPDATED",
-                                id=id,
-                                exception=None,
-                                user_id=None,
-                                request=self.request,
-                            )
+                        lambda: self.send_notification(
+                            event="cv_updated",
+                            status_="UPDATED",
+                            id=id,
+                            exception=None,
+                            user_id=None,
+                            request=self.request,
                         )
                     )
         except Exception as e:
@@ -487,7 +483,7 @@ class PersonalInfo_List_CreateView(viewsets.ModelViewSet, ValidateJson):
         )
 
         serializer.is_valid(raise_exception=True)
-        print(f"serializer_data.validated_data : {serializer.validated_data}")
+        # print(f"serializer_data.validated_data : {serializer.validated_data}")
 
         try:
             self.perform_update(serializer)
@@ -525,8 +521,6 @@ class PersonalInfo_List_CreateView(viewsets.ModelViewSet, ValidateJson):
             "X-RateLimit-Limit": str(request.rate_limit["X-RateLimit-Limit"]),
             "X-RateLimit-Remaining": str(request.rate_limit["X-RateLimit-Remaining"]),
         }
-        # print(f"event named in send_webhook: ------------: {event}")
-        # print(f"headers in send_webhook: ------------: {headers}")
 
         if event in ["cv_updated", "cv_update_fail"]:
             user_id = kwargs.get("user_id", None)

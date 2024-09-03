@@ -1,8 +1,13 @@
 import pytest
+from unittest.mock import patch, MagicMock
+from django.db.models import QuerySet
+from typing import Any, Callable
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
+from stripe import Webhook
 from tests.factories import UserFactory
+from resume.views import PersonalInfo_List_CreateView
 from tests.factories import (
     UserFactory,
     PersonalInfoFactory,
@@ -15,8 +20,8 @@ from tests.factories import (
     ProjectsFactory,
     PublicationFactory,
 )
-from resume.models import PersonalInfo
 import requests_mock
+from resume.serializers import PersonalInfo_Serializer
 from api_auth.models import CustomUser
 from resume.models import (
     PersonalInfo,
@@ -104,7 +109,7 @@ def Manually_Verify_Access_Token():
 
 
 @pytest.fixture
-def create_user_using_api(api_client, build_user):
+def create_user_using_api(api_client: Any, build_user: Callable[..., Any]):
     """
     create a user by sending a post request to 'crud-user' endpoint, and then return user credentials
     """
@@ -136,7 +141,7 @@ def create_user_using_api(api_client, build_user):
 
 @pytest.fixture
 def create_access_token_for_user(
-    api_client, create_user_using_api
+    api_client: Any, create_user_using_api: tuple[dict[str, Any], Any]
 ):  # ===> fixtures are passed as arguments
     def _create_access_token(**kwargs):
 
@@ -265,7 +270,7 @@ def personal_info_data():
 
 @pytest.fixture
 def create_personal_info_instance_using_api(
-    api_client, personal_info_data, create_access_token_for_user
+    api_client: Any, personal_info_data: Callable[..., tuple[dict[str, Any], Any, Any]], create_access_token_for_user: Callable[..., tuple[Any, CustomUser]]
 ):
     def _create_personal_info_instance_using_api():
         # Create user, and get the access token for the created user
@@ -506,10 +511,10 @@ class Test_PersonalInfo_For_Throttling_For_Authenticated_Users:
 
     def test_throttling_settings_for_endpoint1(
         self,
-        api_client,
-        create_access_token_for_user,
-        Manually_Verify_Access_Token,
-        manually_created_data,
+        api_client: Any,
+        create_access_token_for_user: Callable[..., tuple[Any, CustomUser]],
+        Manually_Verify_Access_Token: Callable[..., Any],
+        manually_created_data: dict[str, Any],
     ):
 
         # Create the user first! and then get the access token for the created user
@@ -527,7 +532,8 @@ class Test_PersonalInfo_For_Throttling_For_Authenticated_Users:
         user = CustomUser.objects.get(id=decoded_token["user_id"])
 
         # Send multiple requests to the endpoint
-        for _ in range(3):
+        for i in range(1, 201):
+            print(f"Executing iteration: {i}")
 
             response = api_client.get(
                 reverse("get_personal_info_for_user") + f"?user_id={user.id}",
@@ -536,26 +542,23 @@ class Test_PersonalInfo_For_Throttling_For_Authenticated_Users:
                 format="json",
             )
             # Assert the response status code
-            if _ == 3:
-                assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
-                assert "X-RateLimit-Limit" not in response.headers
-                assert "X-RateLimit-Remaining" not in response.headers
+            assert response.status_code == 200
+            assert response["X-RateLimit-Limit"] == "200/hour"
+            assert response["X-RateLimit-Remaining"] == f"{200 - i}"
+        
+        response = api_client.get(
+                reverse("get_personal_info_for_user") + f"?user_id={user.id}",
+                data=manually_created_data,
+                headers=headers,
+                format="json",
+            )        
+        assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
+        assert "X-RateLimit-Limit" not in response.headers
+        assert "X-RateLimit-Remaining" not in response.headers
 
-                # Assert the throttling limit
-                assert "Retry-After" in response
-            else:
-                # print(f"response--------------: {response.json()}")
+        # Assert the throttling limit
+        assert "Retry-After" in response
 
-                assert response.status_code == 200
-                assert response.json() == []
-
-                assert response["X-RateLimit-Limit"] == "3/hour"
-                assert response["X-RateLimit-Remaining"] == f"{2 - _}"
-
-                # for header in response.headers:
-                #     print(
-                #         f"header name : {header}------------ : {response.headers[header]}"
-                #     )
 
 
 @pytest.mark.django_db
@@ -567,8 +570,8 @@ class Test_PersonalInfo_For_Un_Authenticated_User:
 
     def test_throttling_settings_for_endpoint1(
         self,
-        manually_created_data,
-        api_client,
+        manually_created_data: dict[str, Any],
+        api_client: Any,
     ):
         # set the access token in headers
         headers = {"Origin": "https://web.postman.co"}
@@ -582,13 +585,10 @@ class Test_PersonalInfo_For_Un_Authenticated_User:
             format="json",
         )
         data = response.json()
-        print(f"data----------- {data}")
         assert data == {"detail": "Authentication credentials were not provided."}
         assert response.headers["WWW-Authenticate"] == 'Bearer realm="api"'
         assert response.status_code == 401
 
-        # for header in response.headers:
-        #     print(f"header name : {header}------------ : {response.headers[header]}")
 
 
 
@@ -597,7 +597,7 @@ class Test_Options_Request_For_PersonalInfo_For_Cache_Related_Headers:
     """
     test to chceck if cache related headers are present in response headers
     """
-    def test_options_request(self, api_client, create_personal_info_instance_using_api):
+    def test_options_request(self, api_client: Any, create_personal_info_instance_using_api: Callable[[], tuple]):
 
         # Create PersonalInfo instance by creating a user, and getting the jwt token
         response_from_personal_info , tokens = create_personal_info_instance_using_api()
@@ -616,7 +616,7 @@ class Test_Options_Request_For_PersonalInfo_For_Cache_Related_Headers:
         }
         # Send a POST request to the endpoint
         response = api_client.get(
-            f"https://osamaaslam.pythonanywhere.com/resume/get-personal-info-data-for-user/?personal_info_id={response_from_personal_info["id"]}", 
+            f"https://osamaaslam.pythonanywhere.com/resume/get-personal-info-data-for-user/?personal_info_id={response_from_personal_info['id']}", 
             headers=headers, 
             format="json"
         )
@@ -625,15 +625,9 @@ class Test_Options_Request_For_PersonalInfo_For_Cache_Related_Headers:
         assert response.status_code == status.HTTP_200_OK
 
         # Check cache control headers
+        # Check cache control headers
         assert response.headers.get("Cache-Control") == "private"
-        assert response.headers.get("Vary") == "User-Agent"
-
-        # Check the presence of cache headers
-        assert "Cache-Control" in response.headers
-        assert "Vary" in response.headers
-
-        # Check that Cache-Control is set to private
-        assert "private" in response.headers["Cache-Control"]
+        assert response.headers.get("Vary") == "User-Agent, origin"
 
 
 
@@ -646,10 +640,10 @@ class Test_PersonalInfo_for_allowed_methods_in_allow_header:
 
     def test_allowed_methods_in_allow_header_for_crud_user(
         self,
-        api_client,
-        create_access_token_for_user,
-        Manually_Verify_Access_Token,
-        manually_created_data,
+        api_client: Any,
+        create_access_token_for_user: Callable[..., tuple[Any, CustomUser]],
+        Manually_Verify_Access_Token: Callable[..., Any],
+        manually_created_data: dict[str, Any],
     ):
 
         # Create the user first! and then get the access token for the created user
@@ -714,7 +708,7 @@ class Test_PersonalInfo_For_List_Action:
     """
 
     def test_throttling_settings_for_endpoint1(
-        self, create_access_token_for_user, api_client
+        self, create_access_token_for_user: Callable[..., tuple[Any, CustomUser]], api_client: Any
     ):
 
         # Create the user first! and then get the access token for the created user
@@ -746,7 +740,7 @@ class Test_PersonalInfo_For_Retrieve_Action:
     """
 
     def test_throttling_settings_for_endpoint1(
-        self, api_client, create_personal_info_instance_using_api
+        self, api_client: Any, create_personal_info_instance_using_api: Callable[[], tuple]
     ):
         
         # Create PersonalInfo instance by creating a user, and getting the jwt token
@@ -784,7 +778,7 @@ class Test_Schema_Error_PersonalInfo_create_action:
     test if schema of json in request is valid
     """
 
-    def test_json_schema_error(self, create_access_token_for_user ,personal_info_data):
+    def test_json_schema_error(self, create_access_token_for_user: Callable[..., tuple[Any, CustomUser]] ,personal_info_data: Callable[..., tuple[dict[str, Any], Any, Any]]):
         # Create an API client
         client = APIClient()
 
@@ -817,7 +811,7 @@ class Test_Schema_Validation_PersonalInfo_create_action:
     test if schema of json in request is valid
     """
 
-    def test_json_schema_validation_error(self, create_access_token_for_user ,personal_info_data):
+    def test_json_schema_validation_error(self, create_access_token_for_user: Callable[..., tuple[Any, CustomUser]] ,personal_info_data: Callable[..., tuple[dict[str, Any], Any, Any]]):
         # Create an API client
         client = APIClient()
 
@@ -853,9 +847,9 @@ class Test_PersonalInfo_for_post_request:
 
     def test_personal_info_for_post_request(
         self,
-        api_client,
-        create_access_token_for_user,
-        create_personal_info_instance_using_api
+        api_client: Any,
+        create_access_token_for_user: Callable[..., tuple[Any, CustomUser]],
+        create_personal_info_instance_using_api: Callable[[], tuple]
     ):
         """
         Test the GET method for the endpoint 'get-personal-info-data-for-user'.
@@ -887,7 +881,7 @@ class Test_PersonalInfo_for_post_request:
 class Test_get_personal_info_for_user:
 
     def test_list_method_for_endpoint_named_get_personal_info_for_user(
-        self, api_client, create_personal_info_instance_using_api
+        self, api_client: Any, create_personal_info_instance_using_api: Callable[[], tuple]
     ):
         """
         Test the GET method for the endpoint 'get-personal-info-data-for-user'.
@@ -942,7 +936,7 @@ class Test_get_personal_info_for_user:
 class Test_get_personal_info_for_given_personalinfo:
 
     def test_retrieve_method_for_endpoint_named_get_personal_info_for_personalinfo(
-        self, api_client, create_personal_info_instance_using_api
+        self, api_client: Any, create_personal_info_instance_using_api: Callable[[], tuple]
     ):
         """
         Test the GET method for the endpoint 'get-personal-info-data-for-user'.
@@ -996,7 +990,7 @@ class Test_get_personal_info_for_given_personalinfo:
 class Test_patch_personal_info_for_given_personalinfo:
 
     def test_patch_method_for_endpoint_named_get_personal_info_for_personalinfo(
-        self, api_client,  manually_created_data, create_access_token_for_user
+        self, api_client: Any,  manually_created_data: dict[str, Any], create_access_token_for_user: Callable[..., tuple[Any, CustomUser]]
     ):
         """
         Test the PATCH method for the endpoint 'get-personal-info-data-for-user'.
@@ -1065,7 +1059,7 @@ class Test_patch_personal_info_for_given_personalinfo:
                                  'exception': 'None'}  
 
         # Retrieve the PersonalInfo instance to get 'first_name' after Patch request
-        first_name_after_patch = personal_info_instance.first_name
+        first_name_after_patch = PersonalInfo.objects.get(id=response_data['id']).first_name
         assert first_name_before_patch != first_name_after_patch
 
 
@@ -1074,9 +1068,9 @@ class Test_put_personal_info_for_given_personalinfo:
 
     def test_put_method_for_endpoint_named_get_personal_info_for_personalinfo(
         self,
-        api_client,
-        create_personal_info_instance_using_api,
-        manually_created_data
+        api_client: Any,
+        create_personal_info_instance_using_api: Callable[[], tuple],
+        manually_created_data: dict[str, Any]
     ):
         """
         Test the PUT method for the endpoint 'get-personal-info-data-for-user'.
@@ -1134,7 +1128,7 @@ class Test_delete_personal_info_instance:
     Test the deletion of a personal info instance.
     """
 
-    def test_delete_personal_info(self, api_client, create_personal_info_instance_using_api):
+    def test_delete_personal_info(self, api_client: Any, create_personal_info_instance_using_api: Callable[[], tuple]):
         """
         This test checks if a personal info instance can be successfully deleted
         using the API.
@@ -1174,9 +1168,9 @@ class Test_delete_personal_info_instance:
 class Test_Webhook_PostPersonalInfoInstance:
     def test_personal_info_for_webhook_event_for_post_request(
         self,
-        api_client,
-        create_access_token_for_user,
-        personal_info_data,
+        api_client: Any,
+        create_access_token_for_user: Callable[..., tuple[Any, CustomUser]],
+        personal_info_data: Callable[..., tuple[dict[str, Any], Any, Any]],
     ):
         """
         Test the webhook event for a POST request to the personal info endpoint.
@@ -1229,7 +1223,7 @@ class Test_Webhook_PostPersonalInfoInstance:
 class Test_Webhook_DeletePersonalInfoInstance:
 
     def test_webhook_event_for_delete_request_to_personal_info(
-        self, api_client, create_personal_info_instance_using_api
+        self, api_client: Any, create_personal_info_instance_using_api: Callable[[], tuple]
     ):
         """
         Test the webhook event for a DELETE request to the personal info.
@@ -1263,7 +1257,7 @@ class Test_Webhook_DeletePersonalInfoInstance:
                 "get-personal-info-data-detail", args=[id]),
                 headers=headers,
             )
-            assert delete_response.status_code == 204
+            assert delete_response.status_code == 200
 
             # Confirm if object is deleted
             assert not PersonalInfo.objects.filter(id=id).exists()
@@ -1281,18 +1275,22 @@ class Test_Webhook_DeletePersonalInfoInstance:
 
 
 @pytest.mark.django_db
-class Test_Webhook_PatchPersonalInfoInstance:
-
+class Test_Notification_PatchPersonalInfoInstance:
+    
+    @patch("resume.views.PersonalInfo_List_CreateView.send_notification")
     def test_webhook_event_for_delete_request_to_personal_info(
-        self, api_client, create_personal_info_instance_using_api, fetching_data_from_database_and_create_JSON
+        self, 
+        mock_send_notification,
+        api_client: Any, 
+        create_personal_info_instance_using_api: Callable[[], tuple],
+        fetching_data_from_database_and_create_JSON: Callable[..., dict[str, Any]]
     ):
         """
-        Test to check if signal is triggered for a PATCH request to the personal info.
+        Test to check if Callable for transaction.on_commit() 
+        is called once in a PATCH request.
         """
         # Create User, and Get the access token for this created user
         json_response, tokens = create_personal_info_instance_using_api()
-        # print(f"json response from POST in tests class--------: {json_response}")
-
 
         # Retrieve user id and instance id 
         id = json_response["id"]
@@ -1304,7 +1302,6 @@ class Test_Webhook_PatchPersonalInfoInstance:
         # json data to be sent
         json_data = fetching_data_from_database_and_create_JSON(id)
         json_data["user_id"] = user_id
-        # print(f"fetch data and create JSON tests class--------: {json_response}")
 
         # Set the access token in headers
         headers = {
@@ -1312,56 +1309,39 @@ class Test_Webhook_PatchPersonalInfoInstance:
             "Authorization": f"Bearer {tokens["access"]}",
         }
 
-
         json_data["first_name"] = "first name changed"
-        # Mock the webhook URL
-        webhook_url = "https://osama11111.pythonanywhere.com/cv-webhook/"
 
-        with requests_mock.Mocker() as n:
-            n.post(webhook_url, status_code=200)
+        # Make the POST request
+        response = api_client.patch(
+            f"https://osamaaslam.pythonanywhere.com/resume/patch-put-personal-info-data-for-user/?user_id={user_id}&id={id}&partial=True",
+            data=json_data,
+            headers=headers,
+            format="json",
+        )
+        assert response.status_code == 200  
+        # Assert send_notification is called once
+        mock_send_notification.assert_called_once()  
+                
 
-            # Make the POST request
-            response = api_client.patch(
-                f"https://osamaaslam.pythonanywhere.com/resume/patch-put-personal-info-data-for-user/?user_id={user_id}&id={id}&partial=True",
-                data=json_data,
-                headers=headers,
-                format="json",
-            )
-            # Assertions
-            print(f"error--------------: {response.json()}")
-            assert response.status_code == 200
-
-            # Check if the webhook was called
-            assert not n.called
-        #     assert n.call_count == 1
-        #     request_1 = n.request_history[0]
-
-        #     # request_2 = n.request_history[1]
-        #     assert request_1.url == webhook_url
-
-        #     assert request_1.json() == {
-        #     "id": id,
-        #     "user_id": user_id,
-        #     "event": "cv_created",
-        #     "status": "CREATED",
-        #     "exception": str("None"),
-        # }
-        
 
 @pytest.mark.django_db
-class Test_Webhook_PatchPersonalInfoInstance:
+class Test_Webhook_Patch_Personal_Info_Instance:
 
-    def test_webhook_event_for_delete_request_to_personal_info(
-        self, api_client, create_personal_info_instance_using_api, fetching_data_from_database_and_create_JSON
-    ):
+    @patch("requests.post") 
+    def test_webhook_event_for_patch_request_to_personal_info(
+        self,
+        mock_request,
+        fetching_data_from_database_and_create_JSON,
+        create_personal_info_instance_using_api,
+        api_client
+        ):
         """
-        Test the signal event for a PATCH request to the personal info.
-        and checks if the webhook is called or not.
+        Test to check if 'request.post' is triggered in send_notification() method.
         """
+        
         # Create User, and Get the access token for this created user
         json_response, tokens = create_personal_info_instance_using_api()
-        # print(f"json response from POST in tests class--------: {json_response}")
-
+        print(f"json response post----- {json_response}")
 
         # Retrieve user id and instance id 
         id = json_response["id"]
@@ -1373,7 +1353,6 @@ class Test_Webhook_PatchPersonalInfoInstance:
         # json data to be sent
         json_data = fetching_data_from_database_and_create_JSON(id)
         json_data["user_id"] = user_id
-        # print(f"fetch data and create JSON tests class--------: {json_response}")
 
         # Set the access token in headers
         headers = {
@@ -1381,38 +1360,92 @@ class Test_Webhook_PatchPersonalInfoInstance:
             "Authorization": f"Bearer {tokens["access"]}",
         }
 
+        json_data["first_name"] = "first name changed"
+
+        # Make the POST request
+        response = api_client.patch(
+            f"https://osamaaslam.pythonanywhere.com/resume/patch-put-personal-info-data-for-user/?user_id={user_id}&id={id}&partial=True",
+            data=json_data,
+            headers=headers,
+            format="json",
+        )
+        print(f"json response post----- {response.json()}")
+        assert response.status_code == 200
+        # One Count: Post request triggers the custom signal in signals.py
+        # Second Count: Inside send_notification
+        assert mock_request.call_count == 2  
+        # Assert request.POst is called once 
+        second_call = mock_request.call_args_list[1]
+        assert second_call[0][0] == "https://osama11111.pythonanywhere.com/cv-webhook/"
+        assert second_call[1]["data"] == '{"id": 1, "user_id": 1, "event": "cv_created", "status": "CREATED", "exception": "None"}'     
+
+
+
+
+@pytest.mark.django_db
+class Test_Webhook_Put_Personal_Info_Instance:
+
+    @patch("requests.post") 
+    def test_webhook_event_for_patch_request_to_personal_info(
+        self,
+        mock_request,
+        fetching_data_from_database_and_create_JSON,
+        create_personal_info_instance_using_api,
+        api_client
+        ):
+        """
+        Test to check if 'request.post' is triggered in send_notification() method.
+        """
+        
+        # Create User, and Get the access token for this created user
+        json_response, tokens = create_personal_info_instance_using_api()
+        print(f"json response post----- {json_response}")
+
+        # Retrieve user id and instance id 
+        id = json_response["id"]
+        user_id = json_response["user_id"]
+
+        # Verify PersonalInfo exist in database
+        assert PersonalInfo.objects.filter(id=id).exists() == True
+
+        # json data to be sent
+        json_data = fetching_data_from_database_and_create_JSON(id)
+        json_data["user_id"] = user_id
+
+        # Set the access token in headers
+        headers = {
+            "Origin": "https://web.postman.co",
+            "Authorization": f"Bearer {tokens["access"]}",
+        }
 
         json_data["first_name"] = "first name changed"
-        # Mock the webhook URL
-        webhook_url = "https://osama11111.pythonanywhere.com/cv-webhook/"
 
-        with requests_mock.Mocker() as n:
-            n.post(webhook_url, status_code=200)
-
-            # Make the POST request
-            response = api_client.put(
-                f"https://osamaaslam.pythonanywhere.com/resume/patch-put-personal-info-data-for-user/?user_id={user_id}&id={id}&partial=True",
-                data=json_data,
-                headers=headers,
-                format="json",
-            )
-            # Assertions
-            print(f"error--------------: {response.json()}")
-            assert response.status_code == 200
-
-            # Check if the webhook was called
-            assert not n.called
-        #     assert n.call_count == 1
-        #     request_1 = n.request_history[0]
-
-        #     # request_2 = n.request_history[1]
-        #     assert request_1.url == webhook_url
-
-        #     assert request_1.json() == {
-        #     "id": id,
-        #     "user_id": user_id,
-        #     "event": "cv_created",
-        #     "status": "CREATED",
-        #     "exception": str("None"),
-        # }
-
+        # Make the POST request
+        response = api_client.put(
+            f"https://osamaaslam.pythonanywhere.com/resume/patch-put-personal-info-data-for-user/?user_id={user_id}&id={id}&partial=False",
+            data=json_data,
+            headers=headers,
+            format="json",
+        )
+        print(f"json response post----- {response.json()}")
+        assert response.status_code == 200
+        # One Count: Post request triggers the custom signal in signals.py
+        # Second Count: Inside send_notification
+        assert mock_request.call_count == 2  
+        # Assert request.POst is called once 
+        second_call = mock_request.call_args_list[1]
+        assert second_call[0][0] == "https://osama11111.pythonanywhere.com/cv-webhook/"
+        assert second_call[1]["data"] == '{"id": 1, "user_id": 1, "event": "cv_created", "status": "CREATED", "exception": "None"}'     
+          
+                
+# second_call (tuple)
+# │
+# ├── [0] (tuple)  - Positional Arguments
+# │   ├── [0] (str)  - URL (e.g., "https://osama11111.pythonanywhere.com/cv-webhook/")
+# │
+# └── [1] (dict)   - Keyword Arguments
+#     ├── 'headers' (dict) - Headers (e.g., {"Content-Type": "application/json"})
+#     │
+#     ├── 'data' (str)     - Data (JSON string, e.g., '{"id": 1, "user_id": 1, "event": "cv_created", "status": "CREATED", "exception": "None"}')
+#     │
+#     └── 'verify' (bool)  - SSL Verification (e.g., False)

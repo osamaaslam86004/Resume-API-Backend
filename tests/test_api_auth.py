@@ -259,10 +259,6 @@ class Test_UserCreateView_For_Cache:
         assert response.headers.get("Cache-Control") == "private"
         assert response.headers.get("Vary") == "User-Agent, Cookie, origin"
 
-        # Check the presence of cache headers
-        assert "Cache-Control" in response.headers
-        assert "Vary" in response.headers
-
         # Check that Cache-Control is set to private
         assert "private" in response.headers["Cache-Control"]
 
