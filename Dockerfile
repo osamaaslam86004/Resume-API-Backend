@@ -10,8 +10,9 @@ RUN apt-get update && apt-get install -y netcat-openbsd
 # Copy the requirements file into the container
 COPY requirements.txt .
 
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install dependencies with verbose output and fail on error
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip show django || { echo 'Django not installed!' ; exit 1; }
 
 # Copy the entire Django project into the container
 COPY . .
