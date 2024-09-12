@@ -34,7 +34,7 @@ if DEBUG:
     ALLOWED_HOSTS = [
         "127.0.0.1",
         "localhost",
-        # "diverse-intense-whippet.ngrok-free.app",
+        "diverse-intense-whippet.ngrok-free.app",
         "osamaaslam.pythonanywhere.com",
     ]
 else:
