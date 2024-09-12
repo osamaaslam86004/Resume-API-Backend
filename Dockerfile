@@ -4,7 +4,7 @@ FROM python:3.9-slim AS build
 # Set the working directory in the container
 WORKDIR /app
 
-# Install netcat (required for waiting for PostgreSQL to be ready)
+# # Install netcat (required for waiting for PostgreSQL to be ready)
 RUN apt-get update && apt-get install -y netcat-openbsd
 
 # Copy the requirements file into the container
