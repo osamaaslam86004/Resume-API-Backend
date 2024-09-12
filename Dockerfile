@@ -21,5 +21,5 @@ COPY . .
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Run migrations and start Django server
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Run migrations and start Django server, ensuring the database is ready using wait-for-it.sh
+CMD ["./wait-for-it.sh", "db:5432", "--", "python", "manage.py", "runserver", "0.0.0.0:8000"]
