@@ -177,7 +177,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://diverse-intense-whippet.ngrok-free.app",
     "http://127.0.0.1:5500",
     "https://resume-builder-integrated-with-resume-api.vercel.app",
-    "https://resume-builder-pwa.vercel.app/",
+    "https://resume-builder-pwa.vercel.app",
 ]
 
 CORS_ALLOW_METHODS = [
