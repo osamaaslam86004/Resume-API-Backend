@@ -4,6 +4,12 @@ FROM python:3.9-slim
 # Set the working directory in the container
 WORKDIR /app
 
+# Install netcat
+# Ensuring that the Django API server waits for the PostgreSQL
+#  container to be fully up and ready before trying to run 
+#  database-dependent operations (like migrations or starting the server).
+RUN apt-get update && apt-get install -y netcat
+
 # Copy the requirements file into the container
 COPY requirements.txt .
 
