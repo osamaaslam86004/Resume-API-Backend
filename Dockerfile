@@ -10,6 +10,10 @@ COPY requirements.txt .
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy the wait-for-it.sh script into the container and give it executable permissions
+COPY wait-for-it.sh /app/wait-for-it.sh
+RUN chmod +x /app/wait-for-it.sh
+
 # Copy the entire Django project into the container
 COPY . .
 
