@@ -1,6 +1,15 @@
 # resume_api
 
 How to run this API:
+
+docker-compose up --build
+
+visit: http://local:8000/
+
+
+
+
+Not Recommended:
 python version : 3.11  Django 4.2.8
 
 1. python -m pip install -r requirements.txt
