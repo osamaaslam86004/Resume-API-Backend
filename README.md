@@ -33,12 +33,14 @@ Follow these instructions to set up and run the API:
    ```
 
 2. **Helper Commands:**
-optional: python manage.py flush
-optional: python manage.py reset_db
-optional: python manage.py clean_pyc
-python manage.py makemigrations
-python manage.py migrate
-python manage.py createcachetable
+
+   - Optional: `python manage.py flush`
+   - Optional: `python manage.py reset_db`
+   - Optional: `python manage.py clean_pyc`
+   - `python manage.py makemigrations`
+   - `python manage.py migrate`
+   - `python manage.py createcachetable`
+
 
 
 ### Running the API Using Docker
