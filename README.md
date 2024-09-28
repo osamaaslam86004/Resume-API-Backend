@@ -1,5 +1,14 @@
 # Resume API
 
+## What's new:
+
+### Two features/improvements included in JWT Auth (restframework_simplejwt)
+
+1. Fix: Disable refresh token for inactive user(https://github.com/jazzband/djangorestframework-simplejwt/pull/814/commits/76741ff9ae347c8e7d52101c4bc11985f3940992)
+
+2. Add the refresh token to the outstanding db after refreshing(https://github.com/jazzband/djangorestframework-simplejwt/pull/696)
+
+
 ## Overview
 
 The Resume API provides a platform for users to create and manage their resumes. It supports account creation, issues JWT tokens needed for resume management, and enforces a throttling limit of 200 requests per day for all user types. Users can create, update, and delete their resumes through this API.
@@ -23,6 +32,7 @@ Follow these instructions to set up and run the API:
    python -m pip install -r requirements.txt
    ```
 
+2. **Helper Commands:**
 optional: python manage.py flush
 optional: python manage.py reset_db
 optional: python manage.py clean_pyc
