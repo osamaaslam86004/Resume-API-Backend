@@ -210,12 +210,12 @@ class PersonalInfo_List_CreateView(viewsets.ModelViewSet, ValidateJson):
         response["X-RateLimit-Limit"] = request.rate_limit["X-RateLimit-Limit"]
         response["X-RateLimit-Remaining"] = request.rate_limit["X-RateLimit-Remaining"]
 
-    @extend_schema(
-        description="End-Point For Creating Resume",
-        request=PersonalInfo_Serializer,
-        responses={"201": PersonalInfo_Serializer_Get_Request},
-        methods=["POST"],
-    )
+    # @extend_schema(
+    #     description="End-Point For Creating Resume",
+    #     request=PersonalInfo_Serializer,
+    #     responses={"201": PersonalInfo_Serializer_Get_Request},
+    #     methods=["POST"],
+    # )
     def create(self, request, *args, **kwargs):
 
         # Validate request data

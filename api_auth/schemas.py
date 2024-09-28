@@ -35,21 +35,21 @@ user_create_request_schema = {
         "email": {"type": "string", "format": "email"},
         "username": {"type": "string"},
         "password": {"type": "string"},
-        # "is_active": {"type": "boolean"},
-        # "is_staff": {"type": "boolean"},
+        "is_active": {"type": "boolean"},
+        "is_staff": {"type": "boolean"},
         # "locality": {"type": ["string", "null"]},
         # "facebook": {"type": ["string", "null"], "format": "uri"},
         # "start_date": {"type": ["string", "null"], "format": "date"},
         # "end_date": {"type": ["string", "null"], "format": "date"}
     },
     # "required": ["email", "username", "password", "locality", "facebook", "is_active", "is_staff"]
-    "required": ["email", "username", "password"],
+    "required": ["email", "username", "password", "is_active", "is_staff"],
 }
 
 user_create_response_schema = {
     "type": "object",
     "properties": {
-        "id": {"type": "integer"},
+        "id": {"type": "string"},
         "email": {"type": "string", "format": "email"},
         "username": {"type": "string"},
         "is_active": {"type": "boolean"},

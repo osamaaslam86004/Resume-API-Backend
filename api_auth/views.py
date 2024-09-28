@@ -1,6 +1,7 @@
 import logging
-import jwt
-from django.conf import settings
+
+# import jwt
+# from django.conf import settings
 
 # from rest_framework import serializers
 from rest_framework import viewsets
@@ -20,28 +21,59 @@ from api_auth.schemas import (
     user_create_response_schema,
     ValidateJson,
 )
-from rest_framework.views import APIView
+
+# from rest_framework.views import APIView
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-from api_auth.authentication import Custom_JWTStatelessUserAuthentication
-
-# from rest_framework_simplejwt.authentication import JWTStatelessUserAuthentication
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.authentication import JWTStatelessUserAuthentication
 from resume_api.custom_user_rated_throtle_class import (
     CustomUserRateThrottle,
     CustomAnonRateThrottle,
 )
-from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.token_blacklist.models import (
-    OutstandingToken,
-    # BlacklistedToken,
-)
+from drf_spectacular.utils import extend_schema
+
+# from rest_framework_simplejwt.token_blacklist.models import (
+#     OutstandingToken,
+#     BlacklistedToken,
+# )
 
 logger = logging.getLogger(__name__)
 
 
+from rest_framework_simplejwt.views import TokenObtainPairView
+from drf_spectacular.utils import extend_schema, OpenApiExample
+
+
+@extend_schema(
+    description="End-Point for obtaining Refresh and Access Token",
+    request=TokenClaimObtainPairSerializer,
+    responses={200: TokenClaimObtainPairSerializer},
+    examples=[
+        OpenApiExample(
+            "Example Response",
+            value={"refresh": "string", "access": "string"},
+            response_only=True,  # Specifies this example is for responses
+            status_codes=["200"],
+        )
+    ],
+    methods=["POST", "OPTIONS"],
+)
 class MyTokenObtainPairView(TokenObtainPairView):
+    http_method_names = [
+        "post",
+        "options",
+    ]  # STATUS 200 FOR "OPTIONS" OR 405 METHOD NOT ALLOWED
+    allowed_methods = ["POST", "OPTIONS"]  # RETURNED IN "ALLOW" HEADER
     serializer_class = TokenClaimObtainPairSerializer
+
+    def add_throttle_headers(self, request, response):
+        response["X-RateLimit-Limit"] = request.rate_limit["X-RateLimit-Limit"]
+        response["X-RateLimit-Remaining"] = request.rate_limit["X-RateLimit-Remaining"]
+
+    def finalize_response(self, request, response, *args, **kwargs):
+        response = super().finalize_response(request, response, *args, **kwargs)
+        self.add_throttle_headers(request, response)
+        return response
 
 
 @method_decorator(cache_control(private=True), name="dispatch")
@@ -63,6 +95,19 @@ class UserCreateView(viewsets.ModelViewSet, ValidateJson):
     def add_throttle_headers(self, request, response):
         response["X-RateLimit-Limit"] = request.rate_limit["X-RateLimit-Limit"]
         response["X-RateLimit-Remaining"] = request.rate_limit["X-RateLimit-Remaining"]
+
+    def initialize_request(self, request, *args, **kwargs):
+        self.action = self.action_map.get(request.method.lower())
+        return super().initialize_request(request, *args, **kwargs)
+
+    def get_authenticators(self):
+        # No authentication required for 'create' action (removes lock in Swagger UI)
+        if self.action == "create":
+            return []
+        # JWT authentication required for 'get_api_user_id_for_user'
+        elif self.action == "get_api_user_id_for_user":
+            return [JWTStatelessUserAuthentication()]
+        return super().get_authenticators()
 
     # Overriding because by default options methods returns all 6 HTTP-Methods
     # Post, Put, Patch, Get, Head, Options

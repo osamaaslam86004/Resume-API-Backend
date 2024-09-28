@@ -1,0 +1,84 @@
+
+#----------- /token/ ---------------------
+
+# POST https://diverse-intense-whippet.ngrok-free.app/api/auth/crud-user/ HTTP/1.1
+# Content-Type: application/json
+
+# {
+#   "email": "osama.aslam.86004@example.com",
+#   "username": "osamaalam86004",
+#   "password": "string",
+#   "is_staff": true,
+#   "is_active": false
+
+# }
+
+
+# POST https://diverse-intense-whippet.ngrok-free.app/api/auth/token/ HTTP/1.1
+# Content-Type: application/json
+
+# {
+#     "email": "osama_aslam_1122334455@example.com",
+#     "password": "string"
+# }
+
+# POST https://diverse-intense-whippet.ngrok-free.app/api/auth/token/ HTTP/1.1
+# Content-Type: application/json
+
+# {
+#     "email": "osama.aslam.86004@example.com",
+#     "password": "string"
+# }
+
+#----------- token/refresh/ ---------------------
+
+# POST https://diverse-intense-whippet.ngrok-free.app/api/auth/token/refresh/ HTTP/1.1
+# Content-Type: application/json
+
+# {
+#     "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyODQxNjcwOCwiaWF0IjoxNzI3NTUyNzA4LCJqdGkiOiJkNzk4NWVmOTcwYTI0ODcwOGZjNDkyMjVjNGVhZWI5ZiIsInVzZXJfaWQiOjEwLCJ1c2VyIjoib3NhbWFhbGFtODYwMDQifQ.4svuNmx-tOxRMXyC2X8qNBYwy7P_wbeQQK2i4CKFV28"
+# }
+
+# POST https://diverse-intense-whippet.ngrok-free.app/api/auth/token/refresh/ HTTP/1.1
+# Content-Type: application/json
+
+# {
+#     "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyODQxNDkxMCwiaWF0IjoxNzI3NTUwOTEwLCJqdGkiOiI4NjYxMDFhMjY0OTg0ZjIwOGFjZWNhNDUwYjAwNDcyZCIsInVzZXJfaWQiOjEwLCJ1c2VyIjoib3NhbWFhbGFtODYwMDQifQ.51r3LvNO9HCFpK3fuaM21FP2ttSZmqWcsA71BhzSO_I"
+# }
+
+#----------- /token/verify/ ---------------------
+# 1. do blacklist refresh token
+# POST https://diverse-intense-whippet.ngrok-free.app/api/auth/token/verify/ HTTP/1.1
+# Content-Type: application/json
+
+# {
+#     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI3NzAyNzA4LCJpYXQiOjE3Mjc1NTI3MDgsImp0aSI6ImZjYWQ1MGI0NGIzZTRmZGU4YjYyZjY3NTg2OGE3ZDQ3IiwidXNlcl9pZCI6MTAsInVzZXIiOiJvc2FtYWFsYW04NjAwNCJ9.9k8yijTirQ1zAxZWLSQcDaXgvxjesfi2210G4VjDPBY"
+# }
+
+# 2. do blacklist access token --> pending
+# POST https://diverse-intense-whippet.ngrok-free.app/api/auth/token/verify/ HTTP/1.1
+# Content-Type: application/json
+
+# {
+#     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI3Njk2NTI3LCJpYXQiOjE3Mjc1NDY0MTAsImp0aSI6ImRhMWQzODljMzJjYzQ5YjJhZTgzMjQ3ZDdkMzE0ZTY1IiwidXNlcl9pZCI6OSwidXNlciI6Im9zYW1hX2FzXzExMjIzMzQ0NTUifQ.ltDqBvz0UMneegmkdjB8VqWkFhbqQhow-wgsGZvLX2U"
+# }
+
+
+
+#---------------- for blacklisted app----------------------
+
+# POST https://diverse-intense-whippet.ngrok-free.app/api/auth/token/refresh/ HTTP/1.1
+# Content-Type: application/json
+
+# {
+#     "refresh" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyODI0NDczOCwiaWF0IjoxNzI3MzgwNzM4LCJqdGkiOiIxM2M5Yzk3MGQwNWE0ODA0YjlhOWIyNThiY2U1NDNkMiIsInVzZXJfaWQiOjF9.ozp0_RuCtz-ejiFFHJqZ3unemBdf32nSiTJ9z3JRGxk"
+# }
+
+
+
+# POST https://diverse-intense-whippet.ngrok-free.app/api/auth/token/verify/ HTTP/1.1
+# Content-Type: application/json
+
+# {
+#     "token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyODI0NDczOCwiaWF0IjoxNzI3MzgwNzM4LCJqdGkiOiIxM2M5Yzk3MGQwNWE0ODA0YjlhOWIyNThiY2U1NDNkMiIsInVzZXJfaWQiOjF9.ozp0_RuCtz-ejiFFHJqZ3unemBdf32nSiTJ9z3JRGxk"
+# }
