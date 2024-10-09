@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 from decouple import config
+from celery.schedules import crontab
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -61,6 +62,8 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
     "drf_spectacular",
+    "django_celery_beat",
+    "django_celery_results",
 ]
 
 MIDDLEWARE = [
@@ -158,6 +161,43 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 
 USE_TZ = True
+
+
+# In-memory Celery, Celery Beat settings : Redis as the broker
+# CELERY_BROKER_URL = "redis://localhost:6379/0"
+# CELERY_ACCEPT_CONTENT = ["json"]
+# CELERY_TASK_SERIALIZER = "json"
+# CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+# CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+# CELERY_BEAT_SCHEDULE = {
+#     "delete_blacklisted_tokens": {
+#         "task": "resume.tasks.delete_blacklisted_tokens",
+#         "schedule": 120.0,  # every 2 minutes (120 seconds) for testing
+#     },
+# }
+
+# Database Backend Celery, Celery Beat settings : Redis as the broker
+CELERY_BROKER_URL = "redis://localhost:6379/0"  # Redis as the message broker
+# Configure the result backend to store results in the database
+CELERY_RESULT_BACKEND = (
+    "django-db"  # Use Django ORM to store task results in the database
+)
+# Acceptable content for tasks
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+# Retry on broker connection failure
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_BEAT_SCHEDULE = {
+    "delete_blacklisted_tokens": {
+        "task": "resume.tasks.delete_blacklisted_tokens",
+        # "schedule": crontab(minute="*/2"),  # Every 2 minutes for development/testing
+        "schedule": crontab(minute=0, hour=0),  # Runs every day at midnight
+    },
+}
+# Use the database scheduler from django_celery_beat
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers.DatabaseScheduler"
+# Optionally, you can configure other settings related to logging, timezone, etc.
+CELERY_TIMEZONE = "UTC"  # Make sure this matches your Django timezone settings
 
 
 # Static files (CSS, JavaScript, Images)
@@ -294,7 +334,7 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=10),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
-    "UPDATE_LAST_LOGIN": False,
+    "UPDATE_LAST_LOGIN": False,  # must be False for StatelessAuth
     "ALGORITHM": "HS256",
     "SIGNING_KEY": "django-insecure-o_j80u+4owpa-&!$%&j&n@r0d6&)9kbutwi!m&j-v*b(ems*=d",
     "VERIFYING_KEY": "",
@@ -308,16 +348,16 @@ SIMPLE_JWT = {
     "USER_ID_FIELD": "id",
     "USER_ID_CLAIM": "user_id",
     "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
-    "AUTH_TOKEN_CLASSES": ("api_auth.custom_token_class.CustomToken",),
+    "AUTH_TOKEN_CLASSES": ("custom_simplejwt.custom_token_class.CustomToken",),
     "TOKEN_TYPE_CLAIM": "token_type",
     "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
     "JTI_CLAIM": "jti",
     "TOKEN_OBTAIN_SERIALIZER": "api_auth.serializers.TokenClaimObtainPairSerializer",
     "TOKEN_REFRESH_SERIALIZER": "custom_simplejwt.serializers.CustomTokenRefreshSerializer",
     "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
-    "TOKEN_BLACKLIST_SERIALIZER": "custom_simplejwt.serializers.CustomTokenBlacklistSerializer",
-    "SLIDING_TOKEN_OBTAIN_SERIALIZER": "custom_simplejwt.serializers.TokenObtainSlidingSerializer",
-    "SLIDING_TOKEN_REFRESH_SERIALIZER": "custom_simplejwt.serializers.CustomTokenRefreshSlidingSerializer",
+    "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",
+    "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
+    "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
 
 

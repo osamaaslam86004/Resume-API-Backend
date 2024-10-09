@@ -1,5 +1,5 @@
 from django.urls import path, include
-from api_auth.views import UserCreateView, MyTokenObtainPairView
+from api_auth.views import UserCreateView, MyTokenObtainPairView, LogOutView
 from rest_framework.routers import DefaultRouter
 from custom_simplejwt.views import CustomTokenRefreshView, CustomTokenVerifyView
 
@@ -14,7 +14,7 @@ urlpatterns = [
     path("token/refresh/", CustomTokenRefreshView.as_view(), name="token_refresh"),
     path("token/verify/", CustomTokenVerifyView.as_view(), name="token_verify"),
     # Logout endpoint
-    # path("logout/", LogOutView.as_view(), name="logout"),
+    path("logout/", LogOutView.as_view(), name="logout"),
     path(
         "get-api-user-id-for-user/",
         UserCreateView.as_view({"post": "get_api_user_id_for_user"}),

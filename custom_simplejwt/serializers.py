@@ -9,7 +9,7 @@ from rest_framework_simplejwt.serializers import (
 )
 from django.contrib.auth.models import update_last_login
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
-from rest_framework_simplejwt.authentication import JWTAuthentication, JWTStatelessUserAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from typing import Dict, Any
 from django.conf import settings
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
@@ -98,7 +98,7 @@ class CustomTokenRefreshSerializer(serializers.Serializer):
                     # not be present
                     pass
         
-        auth = JWTStatelessUserAuthentication()
+        auth = JWTAuthentication()
         user = auth.get_user(validated_token=refresh)
         
         if not default_user_authentication_rule(user):
@@ -107,9 +107,6 @@ class CustomTokenRefreshSerializer(serializers.Serializer):
         refresh.set_jti()
         refresh.set_exp()
         refresh.set_iat()
-
-        auth = JWTAuthentication()
-        user = auth.get_user(validated_token=refresh)
 
         OutstandingToken.objects.create(
             user=user,

@@ -13,7 +13,12 @@
 
 The Resume API provides a platform for users to create and manage their resumes. It supports account creation, issues JWT tokens needed for resume management, and enforces a throttling limit of 200 requests per day for all user types. Users can create, update, and delete their resumes through this API.
 
-**Note:** JWT tokens are not deleted or blacklisted by the API unless they expire, which may impact user sessions.
+**Note:** 
+To enhance security, JWTs are now actively managed:
+
+Token Blacklisting: JWTs can be blacklisted, preventing their further use.
+
+Scheduled Token Deletion: Blacklisted tokens are automatically deleted after 1 day. This process is managed by a scheduled task that runs daily at 00:00 UTC, utilizing Celery Beat for scheduling and Celery Worker for task execution. Redis serves as the message broker, and the database backend stores task results.
 
 ## Getting Started
 
@@ -40,6 +45,13 @@ Follow these instructions to set up and run the API:
    - `python manage.py makemigrations`
    - `python manage.py migrate`
    - `python manage.py createcachetable`
+   - `python manage.py migrate django_celery_beat`
+   - `python manage.py migrate django_celery_results`
+   - `python manage.py runserver 8000`
+   - `ngrok http --domain=diverse-intense-whippet.ngrok-free.app 8000`
+   - `celery -A resume_api worker --reload --pool=solo --loglevel=info`
+   - `celery -A resume_api beat --loglevel=info`
+
 
 
 

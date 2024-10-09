@@ -1,16 +1,20 @@
 from rest_framework_simplejwt.tokens import (
     Token,
     # RefreshToken,
-    BlacklistMixin,
+    # BlacklistMixin,
 )
 
 # from rest_framework_simplejwt.utils import get_md5_hash_password
 # from rest_framework_simplejwt.exceptions import AuthenticationFailed
-from django.conf import settings
-from django.contrib.auth import get_user_model
+# from django.conf import settings
+# from django.contrib.auth import get_user_model
 from typing import Dict, Any
-from rest_framework_simplejwt.exceptions import TokenError
-from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
+from rest_framework_simplejwt.exceptions import InvalidToken
+from rest_framework_simplejwt.authentication import default_user_authentication_rule
+from rest_framework_simplejwt.authentication import (
+    JWTStatelessUserAuthentication,
+    default_user_authentication_rule,
+)
 import logging
 
 # from django.core.exceptions import ValidationError
@@ -25,22 +29,20 @@ class CustomToken(Token):
     def __init__(self, token=None):
         super().__init__(token)
 
-        user_id = self.payload.get(settings.SIMPLE_JWT["USER_ID_CLAIM"], None)
+        # user_id = self.payload.get(settings.SIMPLE_JWT["USER_ID_CLAIM"], None)
 
-        try:
-            user = get_user_model().objects.get(id=user_id)
-            logger.info("user object", user)
+        auth = JWTStatelessUserAuthentication()
+        user = auth.get_user(validated_token=token)
 
-            if not user.is_active:
-                BlacklistedToken.objects.create(token=token)
-                raise TokenError(("User is inactive"))
-        except:
-            raise TokenError(("User is inactive"))
+        if not default_user_authentication_rule(user):
+            return InvalidToken("token not valid because user is inactive")
 
+        # try:
+        #     user = get_user_model().objects.get(id=user_id)
+        #     logger.info("user object", user)
 
-class CustomSlidingToken(BlacklistMixin, CustomToken):
-    pass
-
-
-class CustomUntypedToken(CustomToken):
-    pass
+        #     if not user.is_active:
+        #         BlacklistedToken.objects.create(token=token)
+        #         raise TokenError(("User is inactive"))
+        # except:
+        #     raise TokenError(("User is inactive"))
