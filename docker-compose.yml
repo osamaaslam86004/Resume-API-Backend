@@ -10,15 +10,43 @@ services:
     ports:
       - "5432:5432"
 
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+
   web:
-    build: .
-    command: ["./wait-for-it.sh", "db", "--", "python", "manage.py", "runserver", "0.0.0.0:8000"]
+    image: user620/resume_api:v5.0.0
+    command: ["./wait-for-it.sh", "db", "--", "python", "manage.py", "runserver", "localhost:8000"]
     volumes:
       - .:/app
     ports:
       - "8000:8000"
     depends_on:
       - db
+      - redis
+    env_file:
+      - .env
+
+  celery_worker:
+    image: user620/resume_api:v5.0.0
+    command: celery -A resume_api worker --loglevel=info --concurrency=1
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+
+  celery_beat:
+    image: user620/resume_api:v5.0.0
+    command: celery -A resume_api beat --loglevel=info
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app
     env_file:
       - .env
 

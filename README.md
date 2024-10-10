@@ -65,4 +65,4 @@ To build and start the API using Docker, follow these steps:
    docker-compose up --build
    ```
 
-Visit the API at http://localhost:8000/.
+Visit the API at http://127.0.0.1:8000/api/schema/swagger-ui/.

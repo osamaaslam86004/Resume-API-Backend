@@ -101,25 +101,26 @@ WSGI_APPLICATION = "resume_api.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+# if DEBUG:
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.sqlite3",
+#             "NAME": BASE_DIR / "db.sqlite3",
+#         }
+#     }
+
+
 if DEBUG:
     DATABASES = {
         "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": config("POSTGRES_DB"),
+            "USER": config("POSTGRES_USER"),
+            "PASSWORD": config("POSTGRES_PASSWORD"),
+            "HOST": config("POSTGRES_HOST", "db"),
+            "PORT": config("POSTGRES_PORT", "5432"),
         }
     }
-
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": config("POSTGRES_DB"),
-#         "USER": config("POSTGRES_USER"),
-#         "PASSWORD": config("POSTGRES_PASSWORD"),
-#         "HOST": config("POSTGRES_HOST", "db"),
-#         "PORT": config("POSTGRES_PORT", "5432"),
-#     }
-# }
 
 
 # Cache configuration
@@ -177,15 +178,13 @@ USE_TZ = True
 # }
 
 # Database Backend Celery, Celery Beat settings : Redis as the broker
-CELERY_BROKER_URL = "redis://localhost:6379/0"  # Redis as the message broker
-# Configure the result backend to store results in the database
-CELERY_RESULT_BACKEND = (
-    "django-db"  # Use Django ORM to store task results in the database
-)
-# Acceptable content for tasks
+# for localhost not with docker
+# CELERY_BROKER_URL = "redis://localhost:6379/0"
+# for production / docker
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_RESULT_BACKEND = "django-db"
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
-# Retry on broker connection failure
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_BEAT_SCHEDULE = {
     "delete_blacklisted_tokens": {
@@ -194,7 +193,6 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(minute=0, hour=0),  # Runs every day at midnight
     },
 }
-# Use the database scheduler from django_celery_beat
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers.DatabaseScheduler"
 # Optionally, you can configure other settings related to logging, timezone, etc.
 CELERY_TIMEZONE = "UTC"  # Make sure this matches your Django timezone settings

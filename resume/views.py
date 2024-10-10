@@ -49,9 +49,7 @@ logger = logging.getLogger(__name__)
 class Homepage(View):
     def get(self, request, **kwargs):
         if settings.DEBUG:
-            return HttpResponseRedirect(
-                "https://diverse-intense-whippet.ngrok-free.app/api/schema/swagger-ui/"
-            )
+            return HttpResponseRedirect("http://localhost:8000/api/schema/swagger-ui/")
         else:
             return HttpResponseRedirect(
                 "https://osamaaslam.pythonanywhere.com/api/schema/swagger-ui/"
@@ -129,9 +127,7 @@ class PersonalInfoWizard(SessionWizardView):
 
             messages.success(self.request, "CV created successfully!")
             if settings.DEBUG:
-                return HttpResponsePermanentRedirect(
-                    "https://diverse-intense-whippet.ngrok-free.app/"
-                )
+                return HttpResponsePermanentRedirect("http://localhost:8000/")
             else:
                 return HttpResponsePermanentRedirect(
                     "https://osama11111.pythonanywhere.com/"
@@ -181,9 +177,7 @@ class PersonalInfoWizard(SessionWizardView):
 
             messages.success(self.request, "CV created successfully!")
             if settings.DEBUG:
-                return HttpResponsePermanentRedirect(
-                    "https://diverse-intense-whippet.ngrok-free.app/"
-                )
+                return HttpResponsePermanentRedirect("http://localhost:8000/")
             else:
                 return HttpResponsePermanentRedirect(
                     "https://osama11111.pythonanywhere.com/"

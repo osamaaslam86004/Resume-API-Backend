@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 # from custom_simplejwt.custom_token_class import CustomSlidingToken
 from rest_framework_simplejwt.serializers import (
     TokenObtainSerializer,
@@ -20,6 +21,7 @@ from django.utils.module_loading import import_string
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import default_user_authentication_rule
 from rest_framework_simplejwt.exceptions import InvalidToken
+
 # from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
 
 
@@ -34,7 +36,7 @@ class CustomTokenObtainSerializer(TokenObtainSerializer):
         print(f"authenticated kwargs {authenticate_kwargs}")
         try:
             authenticate_kwargs["request"] = self.context["request"]
-            print(f"authenticate_kwargs['request'] {authenticate_kwargs["request"]}")
+            print(f"authenticate_kwargs['request'] {authenticate_kwargs['request']}")
         except KeyError:
             pass
 
@@ -97,10 +99,10 @@ class CustomTokenRefreshSerializer(serializers.Serializer):
                     # If blacklist app not installed, `blacklist` method will
                     # not be present
                     pass
-        
+
         auth = JWTAuthentication()
         user = auth.get_user(validated_token=refresh)
-        
+
         if not default_user_authentication_rule(user):
             return InvalidToken("token not valid because user is inactive")
 
@@ -119,5 +121,3 @@ class CustomTokenRefreshSerializer(serializers.Serializer):
         data["refresh"] = str(refresh)
 
         return data
-
-

@@ -25,8 +25,8 @@ WORKDIR /resume_api_build
 
 # Copy necessary files from the build stage to the resume_api_build folder
 COPY --from=build /app/. /resume_api_build/
-COPY --from=build /user/local/lib/python3.9/site-packages/ /user/local/lib/python3.9/site-packages/
-COPY --from=build /user/local/bin/ /user/local/bin/
+COPY --from=build /usr/local/lib/python3.9/site-packages/ /usr/local/lib/python3.9/site-packages/
+COPY --from=build /usr/local/bin/ /usr/local/bin/
 
 # Install netcat and pip (if needed)
 RUN apt-get update && apt-get install -y netcat-openbsd
