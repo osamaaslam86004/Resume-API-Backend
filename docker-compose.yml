@@ -9,15 +9,19 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - backend_network
 
   redis:
     image: "redis:alpine"
     ports:
       - "6379:6379"
+    networks:
+      - backend_network
 
   web:
     image: user620/resume_api:v5.0.0
-    command: ["./wait-for-it.sh", "db", "--", "python", "manage.py", "runserver", "localhost:8000"]
+    command: ["./wait-for-it.sh", "db", "--", "python", "manage.py", "runserver", "0.0.0.0:8000"]
     volumes:
       - .:/app
     ports:
@@ -27,6 +31,8 @@ services:
       - redis
     env_file:
       - .env
+    networks:
+      - backend_network
 
   celery_worker:
     image: user620/resume_api:v5.0.0
@@ -38,6 +44,8 @@ services:
       - .:/app
     env_file:
       - .env
+    networks:
+      - backend_network
 
   celery_beat:
     image: user620/resume_api:v5.0.0
@@ -49,6 +57,11 @@ services:
       - .:/app
     env_file:
       - .env
+    networks:
+      - backend_network
 
 volumes:
   postgres_data:
+
+networks:
+  backend_network: {}
