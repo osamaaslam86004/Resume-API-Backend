@@ -173,7 +173,7 @@ CELERY_AVAILABLE = False
 
 if CELERY_AVAILABLE:
     # Database Backend Celery, Celery Beat settings : Redis as the broker
-    CELERY_BROKER_URL = "redis://default:odUcAFBlDF7piVTw4jWY5LNNwFtavfpt@redis-12503.c263.us-east-1-2.ec2.redns.redis-cloud.com:12503"
+    CELERY_BROKER_URL = config("CELERY_BROKER_URL")
     CELERY_RESULT_BACKEND = "django-db"
     CELERY_ACCEPT_CONTENT = ["json"]
     CELERY_TASK_SERIALIZER = "json"
