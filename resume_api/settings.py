@@ -184,7 +184,7 @@ if CELERY_AVAILABLE:
         "delete_blacklisted_tokens": {
             "task": "resume.tasks.delete_blacklisted_tokens",
             # "schedule": crontab(minute="*/2"),  # Every 2 minutes for development/testing
-            "schedule": crontab(minute=0, hour=0),  # Runs every day at midnight
+            # "schedule": crontab(minute=0, hour=0),  # Runs every day at midnight
         },
     }
     CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers.DatabaseScheduler"
