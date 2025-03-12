@@ -42,6 +42,7 @@ Follow these instructions to set up and run the API:
    - Optional: `python manage.py flush`
    - Optional: `python manage.py reset_db`
    - Optional: `python manage.py clean_pyc`
+   - `python delete_migrations.py`
    - `python manage.py makemigrations`
    - `python manage.py migrate`
    - `python manage.py createcachetable`
