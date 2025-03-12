@@ -9,9 +9,18 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - backend_network
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    networks:
+      - backend_network
 
   web:
-    build: .
+    image: user620/resume_api:v5.0.0
     command: ["./wait-for-it.sh", "db", "--", "python", "manage.py", "runserver", "0.0.0.0:8000"]
     volumes:
       - .:/app
@@ -19,8 +28,40 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - redis
     env_file:
       - .env
+    networks:
+      - backend_network
+
+  celery_worker:
+    image: user620/resume_api:v5.0.0
+    command: celery -A resume_api worker --loglevel=info --concurrency=1
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    networks:
+      - backend_network
+
+  celery_beat:
+    image: user620/resume_api:v5.0.0
+    command: celery -A resume_api beat --loglevel=info
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    networks:
+      - backend_network
 
 volumes:
   postgres_data:
+
+networks:
+  backend_network: {}

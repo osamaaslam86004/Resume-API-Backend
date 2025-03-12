@@ -1,11 +1,20 @@
 import logging
-import jwt
-from django.conf import settings
+
+# import jwt
+# from django.conf import settings
 
 # from rest_framework import serializers
-from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 from api_auth.models import CustomUser
-from api_auth.serializers import UserSerializer, TokenClaimObtainPairSerializer
+from api_auth.serializers import (
+    UserSerializer,
+    TokenClaimObtainPairSerializer,
+    LogoutResponseSerializer,
+    TokenErrorSerializer,
+    InvalidTokenResponseSerializer,
+    InternalServerErrorSerializer,
+)
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.response import Response
 from rest_framework import status
@@ -20,34 +29,59 @@ from api_auth.schemas import (
     user_create_response_schema,
     ValidateJson,
 )
-from rest_framework.views import APIView
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-from api_auth.authentication import Custom_JWTStatelessUserAuthentication
-
-# from rest_framework_simplejwt.authentication import JWTStatelessUserAuthentication
-from rest_framework_simplejwt.tokens import RefreshToken
 from resume_api.custom_user_rated_throtle_class import (
     CustomUserRateThrottle,
     CustomAnonRateThrottle,
 )
-from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.token_blacklist.models import (
-    OutstandingToken,
-    # BlacklistedToken,
-)
+from rest_framework_simplejwt.authentication import JWTStatelessUserAuthentication
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
+from drf_spectacular.utils import extend_schema
+from rest_framework import status
+from rest_framework_simplejwt.views import TokenObtainPairView
+from drf_spectacular.utils import extend_schema, OpenApiExample
 
 logger = logging.getLogger(__name__)
 
 
+@extend_schema(
+    description="End-Point for obtaining Refresh and Access Token",
+    request=TokenClaimObtainPairSerializer,
+    responses={200: TokenClaimObtainPairSerializer},
+    examples=[
+        OpenApiExample(
+            "Example Response",
+            value={"refresh": "string", "access": "string"},
+            response_only=True,  # Specifies this example is for responses
+            status_codes=["200"],
+        )
+    ],
+    methods=["POST", "OPTIONS"],
+)
 class MyTokenObtainPairView(TokenObtainPairView):
+    http_method_names = [
+        "post",
+        "options",
+    ]  # STATUS 200 FOR "OPTIONS" OR 405 METHOD NOT ALLOWED
+    allowed_methods = ["POST", "OPTIONS"]  # RETURNED IN "ALLOW" HEADER
     serializer_class = TokenClaimObtainPairSerializer
+
+    def add_throttle_headers(self, request, response):
+        response["X-RateLimit-Limit"] = request.rate_limit["X-RateLimit-Limit"]
+        response["X-RateLimit-Remaining"] = request.rate_limit["X-RateLimit-Remaining"]
+
+    def finalize_response(self, request, response, *args, **kwargs):
+        response = super().finalize_response(request, response, *args, **kwargs)
+        self.add_throttle_headers(request, response)
+        return response
 
 
 @method_decorator(cache_control(private=True), name="dispatch")
 @method_decorator(cache_page(60 * 60 * 2), name="dispatch")
 @method_decorator(vary_on_headers("User-Agent"), name="dispatch")
-class UserCreateView(viewsets.ModelViewSet, ValidateJson):
+class UserCreateView(ModelViewSet, ValidateJson):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     http_method_names = [
@@ -63,6 +97,19 @@ class UserCreateView(viewsets.ModelViewSet, ValidateJson):
     def add_throttle_headers(self, request, response):
         response["X-RateLimit-Limit"] = request.rate_limit["X-RateLimit-Limit"]
         response["X-RateLimit-Remaining"] = request.rate_limit["X-RateLimit-Remaining"]
+
+    def initialize_request(self, request, *args, **kwargs):
+        self.action = self.action_map.get(request.method.lower())
+        return super().initialize_request(request, *args, **kwargs)
+
+    def get_authenticators(self):
+        # No authentication required for 'create' action (removes lock in Swagger UI)
+        if self.action == "create":
+            return []
+        # JWT authentication required for 'get_api_user_id_for_user'
+        elif self.action == "get_api_user_id_for_user":
+            return [JWTStatelessUserAuthentication()]
+        return super().get_authenticators()
 
     # Overriding because by default options methods returns all 6 HTTP-Methods
     # Post, Put, Patch, Get, Head, Options
@@ -144,6 +191,62 @@ class UserCreateView(viewsets.ModelViewSet, ValidateJson):
             )
 
 
+@extend_schema(
+    request=None,
+    responses={
+        200: LogoutResponseSerializer,  # Success response with the status message
+        400: TokenErrorSerializer,  # Error response for invalid tokens
+        401: InvalidTokenResponseSerializer,  # Unauthorized error
+        500: InternalServerErrorSerializer,
+    },
+    summary="Logout Endpoint",
+)
+class LogOutView(APIView):
+    authentication_classes = [JWTStatelessUserAuthentication]
+    renderer_classes = [JSONRenderer]
+    parser_classes = [JSONParser]
+    throttle_classes = [CustomUserRateThrottle]
+    http_method_names = ["post", "options"]
+    allowed_methods = ["POST", "OPTIONS"]
+
+    def post(self, request, *args, **kwargs):
+        """Blacklist the refresh token: extract token from the header
+        and logout requested user"""
+
+        refresh = request.data["refresh"]
+
+        try:
+            validate_refresh = RefreshToken(refresh)
+        except TokenError as e:
+            return Response(
+                {"detail": "Token already blacklisted"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        auth = JWTStatelessUserAuthentication()
+        auth_user = auth.get_user(validate_refresh)
+
+        try:
+            model_user = CustomUser.objects.get(id=auth_user.id)
+            model_user.is_active = False
+            model_user.save()
+            try:
+                validate_refresh.blacklist()
+                return Response(
+                    {"status": "Successful Logout"}, status=status.HTTP_200_OK
+                )
+            except TokenError as e:
+                return Response(
+                    {"detail": "Token already blacklisted"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        except:
+            return Response(
+                {"failed to update user profile"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
 # class CheckOutstandingTokenView(APIView):
 #     authentication_classes = [Custom_JWTStatelessUserAuthentication]
 #     renderer_classes = [JSONRenderer]
@@ -184,43 +287,6 @@ class UserCreateView(viewsets.ModelViewSet, ValidateJson):
 #                 "decoded_token": decoded_token,
 #             },
 #             status=200,
-#         )
-
-
-# class LogOutView(APIView):
-#     authentication_classes = [Custom_JWTStatelessUserAuthentication]
-#     renderer_classes = [JSONRenderer]
-#     parser_classes = [JSONParser]
-#     throttle_classes = [CustomUserRateThrottle]
-#     http_method_names = ["post"]
-#     allowed_methods = ["POST"]
-
-#     def post(self, request):
-#         """Blacklist the refresh token: extract token from the header
-#         during logout request user and refresh token is provided"""
-#         try:
-
-#             Refresh_token = request.data["refresh"]
-#             refresh_token = RefreshToken(Refresh_token)
-#             access = refresh_token.access_token
-
-#             is_active = request.user.is_active
-
-#             # Blacklist the outstanding refresh token
-#             # check and raise exception if token is "already" blacklisted
-#             refresh_token.blacklist()
-
-#         except Exception as e:
-#             return Response({"detail": str(e)}, status=status.HTTP_200_OK)
-
-#         return Response(
-#             {
-#                 "status": "Successful Logout",
-#                 "is_active": str(is_active),
-#                 "is_blacklisted": "True",
-#                 "access": str(access),
-#             },
-#             status=status.HTTP_200_OK,
 #         )
 
 
