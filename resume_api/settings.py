@@ -10,11 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from pathlib import Path
 import os
-from decouple import config
-from celery.schedules import crontab
+from pathlib import Path
 
+from celery.schedules import crontab
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -62,8 +62,8 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
     "drf_spectacular",
-    "django_celery_beat",
-    "django_celery_results",
+    # "django_celery_beat",
+    # "django_celery_results",
 ]
 
 MIDDLEWARE = [
@@ -101,26 +101,24 @@ WSGI_APPLICATION = "resume_api.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-# if DEBUG:
-#     DATABASES = {
-#         "default": {
-#             "ENGINE": "django.db.backends.sqlite3",
-#             "NAME": BASE_DIR / "db.sqlite3",
-#         }
-#     }
 
-
-if DEBUG:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": config("POSTGRES_DB"),
-            "USER": config("POSTGRES_USER"),
-            "PASSWORD": config("POSTGRES_PASSWORD"),
-            "HOST": config("POSTGRES_HOST", "db"),
-            "PORT": config("POSTGRES_PORT", "5432"),
-        }
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
+}
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": config("POSTGRES_DB"),
+#         "USER": config("POSTGRES_USER"),
+#         "PASSWORD": config("POSTGRES_PASSWORD"),
+#         "HOST": config("POSTGRES_HOST", "db"),
+#         "PORT": config("POSTGRES_PORT", "5432"),
+#     }
+# }
 
 
 # Cache configuration
@@ -164,38 +162,29 @@ USE_I18N = True
 USE_TZ = True
 
 
-# In-memory Celery, Celery Beat settings : Redis as the broker
-# CELERY_BROKER_URL = "redis://localhost:6379/0"
-# CELERY_ACCEPT_CONTENT = ["json"]
-# CELERY_TASK_SERIALIZER = "json"
-# CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
-# CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-# CELERY_BEAT_SCHEDULE = {
-#     "delete_blacklisted_tokens": {
-#         "task": "resume.tasks.delete_blacklisted_tokens",
-#         "schedule": 120.0,  # every 2 minutes (120 seconds) for testing
-#     },
-# }
+if DEBUG:
+    CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_TASK_EAGER_PROPAGATES = True
 
-# Database Backend Celery, Celery Beat settings : Redis as the broker
-# for localhost not with docker
-# CELERY_BROKER_URL = "redis://localhost:6379/0"
-# for production / docker
-CELERY_BROKER_URL = "redis://redis:6379/0"
-CELERY_RESULT_BACKEND = "django-db"
-CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-CELERY_BEAT_SCHEDULE = {
-    "delete_blacklisted_tokens": {
-        "task": "resume.tasks.delete_blacklisted_tokens",
-        # "schedule": crontab(minute="*/2"),  # Every 2 minutes for development/testing
-        "schedule": crontab(minute=0, hour=0),  # Runs every day at midnight
-    },
-}
-CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers.DatabaseScheduler"
-# Optionally, you can configure other settings related to logging, timezone, etc.
-CELERY_TIMEZONE = "UTC"  # Make sure this matches your Django timezone settings
+CELERY_AVAILABLE = False
+
+if CELERY_AVAILABLE:
+    # Database Backend Celery, Celery Beat settings : Redis as the broker
+    CELERY_BROKER_URL = "redis://default:odUcAFBlDF7piVTw4jWY5LNNwFtavfpt@redis-12503.c263.us-east-1-2.ec2.redns.redis-cloud.com:12503"
+    CELERY_RESULT_BACKEND = "django-db"
+    CELERY_ACCEPT_CONTENT = ["json"]
+    CELERY_TASK_SERIALIZER = "json"
+    CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+    # Optionally, you can configure other settings related to logging, timezone, etc.
+    CELERY_TIMEZONE = "UTC"  # Make sure this matches your Django timezone settings
+    CELERY_BEAT_SCHEDULE = {
+        "delete_blacklisted_tokens": {
+            "task": "resume.tasks.delete_blacklisted_tokens",
+            # "schedule": crontab(minute="*/2"),  # Every 2 minutes for development/testing
+            "schedule": crontab(minute=0, hour=0),  # Runs every day at midnight
+        },
+    }
+    CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers.DatabaseScheduler"
 
 
 # Static files (CSS, JavaScript, Images)
@@ -243,7 +232,7 @@ CORS_ALLOW_HEADERS = [
 
 if DEBUG:
     CSRF_TRUSTED_ORIGINS = [
-        "http://127.0.0.1:5500",
+        "http://127.0.0.1",
         "https://web.postman.co",
         "https://diverse-intense-whippet.ngrok-free.app",
         "https://osamaaslam.pythonanywhere.com",
@@ -253,7 +242,6 @@ if DEBUG:
 else:
     # authenticate teh request only, checking if it has CSRF token comming here from django-e-commrace
     CSRF_TRUSTED_ORIGINS = [
-        "http://127.0.0.1:5500",
         "https://osamaaslam.pythonanywhere.com",
         "https://osama11111.pythonanywhere.com",
         "https://web.postman.co",
@@ -323,7 +311,6 @@ SPECTACULAR_SETTINGS = {
 # They are encoded as base64 strings and separated by dots (.).
 from datetime import timedelta
 
-
 # Disable DRF built-in session authentication
 REST_SESSION_LOGIN = False
 
@@ -357,35 +344,6 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
-
-
-# SIMPLE_JWT = {
-#     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=2500),
-#     "REFRESH_TOKEN_LIFETIME": timedelta(days=10),
-#     "ROTATE_REFRESH_TOKENS": False,
-#     "BLACKLIST_AFTER_ROTATION": False,
-#     "UPDATE_LAST_LOGIN": False,
-#     "ALGORITHM": "HS256",
-#     "SIGNING_KEY": "django-insecure-o_j80u+4owpa-&!$%&j&n@r0d6&)9kbutwi!m&j-v*b(ems*=d",
-#     "VERIFYING_KEY": "",
-#     "AUDIENCE": None,
-#     "ISSUER": None,
-#     "JSON_ENCODER": None,
-#     "JWK_URL": None,
-#     "LEEWAY": 0,
-#     "AUTH_HEADER_TYPES": ("Bearer",),
-#     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
-#     "USER_ID_FIELD": "id",
-#     "USER_ID_CLAIM": "user_id",
-#     "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
-#     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
-#     "TOKEN_TYPE_CLAIM": "token_type",
-#     "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
-#     "JTI_CLAIM": "jti",
-#     "TOKEN_OBTAIN_SERIALIZER": "api_auth.serializers.TokenClaimObtainPairSerializer",
-#     "TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSerializer",
-#     "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
-# }
 
 
 # -------------Specifically for drf_spectacular----------------

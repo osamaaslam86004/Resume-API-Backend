@@ -52,6 +52,12 @@ Follow these instructions to set up and run the API:
    - `celery -A resume_api worker --reload --pool=solo --loglevel=info`
    - `celery -A resume_api beat --loglevel=info`
 
+3. **Update 1:**
+   - Management Command to delete blacklisted tokens:
+     --`python manage.py delete_blacklisted_tokens`
+
+  
+
 
 
 
