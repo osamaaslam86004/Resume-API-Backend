@@ -163,6 +163,7 @@ USE_I18N = True
 
 USE_TZ = True
 
+MAINTENANCE_MODE = True
 
 if DEBUG:
     CELERY_TASK_ALWAYS_EAGER = True
