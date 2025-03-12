@@ -57,10 +57,10 @@ Follow these instructions to set up and run the API:
    - Management Command to delete blacklisted tokens:
      --`python manage.py delete_blacklisted_tokens`
 
-  
-
-
-
+4. **Update 2**
+     - compression middleware added
+     - maintainance middleware added
+     - 503.html for maintainance mode 
 
 ### Running the API Using Docker
 
