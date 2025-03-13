@@ -1,47 +1,45 @@
 import logging
 
-# import jwt
-# from django.conf import settings
+import jsonschema
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_control, cache_page
+from django.views.decorators.vary import vary_on_headers
+from drf_spectacular.utils import OpenApiExample, extend_schema
+from jsonschema import ValidationError
+from rest_framework import status
+from rest_framework.parsers import JSONParser
+from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
 
 # from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from api_auth.models import CustomUser
-from api_auth.serializers import (
-    UserSerializer,
-    TokenClaimObtainPairSerializer,
-    LogoutResponseSerializer,
-    TokenErrorSerializer,
-    InvalidTokenResponseSerializer,
-    InternalServerErrorSerializer,
-)
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.response import Response
-from rest_framework import status
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
-from django.views.decorators.vary import vary_on_headers
-from django.views.decorators.cache import cache_control
-import jsonschema
-from jsonschema import ValidationError
-from api_auth.schemas import (
-    # user_create_request_schema,
-    user_create_response_schema,
-    ValidateJson,
-)
-from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
-from resume_api.custom_user_rated_throtle_class import (
-    CustomUserRateThrottle,
-    CustomAnonRateThrottle,
-)
 from rest_framework_simplejwt.authentication import JWTStatelessUserAuthentication
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
-from drf_spectacular.utils import extend_schema
-from rest_framework import status
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-from drf_spectacular.utils import extend_schema, OpenApiExample
+
+from api_auth.models import CustomUser
+from api_auth.schemas import (  # user_create_request_schema,
+    ValidateJson,
+    user_create_response_schema,
+)
+from api_auth.serializers import (
+    InternalServerErrorSerializer,
+    InvalidTokenResponseSerializer,
+    LogoutResponseSerializer,
+    TokenClaimObtainPairSerializer,
+    TokenErrorSerializer,
+    UserSerializer,
+)
+from resume_api.custom_user_rated_throtle_class import (
+    CustomAnonRateThrottle,
+    CustomUserRateThrottle,
+)
+
+# import jwt
+# from django.conf import settings
+
 
 logger = logging.getLogger(__name__)
 
@@ -192,7 +190,7 @@ class UserCreateView(ModelViewSet, ValidateJson):
 
 
 @extend_schema(
-    request=None,
+    request=LogoutResponseSerializer,
     responses={
         200: LogoutResponseSerializer,  # Success response with the status message
         400: TokenErrorSerializer,  # Error response for invalid tokens

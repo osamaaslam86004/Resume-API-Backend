@@ -205,7 +205,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://osamaaslam.pythonanywhere.com",
     "https://web.postman.co",
     "https://diverse-intense-whippet.ngrok-free.app",
-    "http://127.0.0.1:5500",
+    "http://127.0.0.1",
     "https://resume-builder-integrated-with-resume-api.vercel.app",
     "https://resume-builder-pwa.vercel.app",
 ]
