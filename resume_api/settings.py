@@ -370,7 +370,12 @@ LOGGING = {
         },
         "file": {
             "class": "logging.FileHandler",
-            "filename": "django_debug.log",
+            "filename": os.path.join(BASE_DIR, "logs", "django_debug.log"),
+            "formatter": "verbose",
+        },
+        "resume_file": {  # NEW: Log file for all logs related to the 'resume' app
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "logs", "resume.log"),
             "formatter": "verbose",
         },
     },
@@ -382,6 +387,11 @@ LOGGING = {
         },
         "api_auth": {  # You can replace this with your actual app name
             "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "resume": {  # NEW: Logs everything related to 'resume', including management commands
+            "handlers": ["console", "resume_file"],
             "level": "INFO",
             "propagate": False,
         },
