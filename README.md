@@ -1,6 +1,6 @@
 # Resume API
 
-![Network architecture of resume API system](assets/Network architecture.png)
+![Network architecture of resume API system](assets/Network_architecture.png)
 
 ## What's new:
 
