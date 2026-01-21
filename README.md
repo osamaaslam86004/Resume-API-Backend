@@ -1,5 +1,7 @@
 # Resume API
 
+![Network architecture of resume API system](assets/Network architecture.png)
+
 ## What's new:
 
 ### Two features/improvements included in JWT Auth (restframework_simplejwt)
